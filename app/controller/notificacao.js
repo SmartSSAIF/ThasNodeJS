@@ -28,8 +28,9 @@ module.exports.get = function (app, req, res) {
                 console.log('result ', result);
                 for(let user in result){
                     console.log('User ', user);
-                    const usuario = JSON.parse(user);
-                    let pushToken = usuario.token;
+                    
+                    let pushToken = result[user].token;
+                    console.log(pushToken);
                     if (!Expo.isExpoPushToken(pushToken)) {
                         console.error(`Push token ${pushToken} is not a valid Expo push token`);
                         continue;
