@@ -89,7 +89,7 @@ module.exports.get = function (app, req, res) {
                       }
                     })();
               
-                }
+                
 
                 return res.status(200).send(result);
             }
