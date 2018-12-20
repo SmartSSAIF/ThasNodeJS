@@ -36,14 +36,14 @@ module.exports.get = function (app, req, res) {
                         console.error(`Push token ${pushToken} is not a valid Expo push token`);
                         continue;
                       }
-                    }
+                    
                       messages.push({
                         to: pushToken,
                         sound: 'default',
                         body: mensagem,
                         data: { withSome: 'data' },
                       })
-                    
+                    }
               
                     let chunks = expo.chunkPushNotifications(messages);
                     let tickets = [];
