@@ -41,7 +41,7 @@ module.exports.get = function (app, req, res) {
                         body: mensagem,
                         data: { withSome: 'data' },
                       })
-                    }
+                    
               
                     let chunks = expo.chunkPushNotifications(messages);
                     let tickets = [];
@@ -92,7 +92,7 @@ module.exports.get = function (app, req, res) {
                       }
                     })();
               
-                
+                }
 
                 return res.status(200).send(result);
             }
