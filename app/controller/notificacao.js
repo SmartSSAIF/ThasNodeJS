@@ -4,7 +4,7 @@ module.exports.get = function (app, req, res) {
         var genericDAO = new app.app.models.GenericDAO(connection);
 
         var query = "SELECT * FROM notificacao where (medico = 1 and (? = 1)) or (enfermeiro = 1 and (? = 1)) or (admin = 1 and (? = 1))";
-        var requisicao = req.body;
+        var requisicao = req.header;
         const admin = req.admin;
         const medico = req.medico;
         const enfermeiro = req.enfermeiro;
