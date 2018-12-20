@@ -9,11 +9,12 @@ module.exports.get = function (app, req, res) {
         var medico = req.get('medico');
         var enfermeiro = req.get('enfermeiro');
 
-        console.log(req.headers);
+        console.log(req);
 
         console.log('admin ', admin);
         console.log('medico ', medico);
         console.log('enfermeiro ', enfermeiro);
+        console.log(res);
         genericDAO.execute(query, [medico, enfermeiro, admin], function (error, result) {
             console.log("busca notificacoes");
             if (error) {
