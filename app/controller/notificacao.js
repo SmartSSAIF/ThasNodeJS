@@ -10,7 +10,7 @@ module.exports.get = function (app, req, res) {
         const enfermeiro = req.enfermeiro;
 
 
-        genericDAO.execute(query, function (error, [medico, enfermeiro, admin] ,result) {
+        genericDAO.execute(query, [medico, enfermeiro, admin], function (error, result) {
             console.log("busca notificacoes");
             if (error) {
                 console.log("erro")
