@@ -25,8 +25,8 @@ GenericDAO.prototype.delete = async function(field,table, callback) {
 this._connection.query("delete from "+table+" where ?",field, callback);
 
 }
-GenericDAO.prototype.execute = async function(field, callback) {
-this._connection.query(field, callback);
+GenericDAO.prototype.execute = async function(field, args ,callback) {
+this._connection.query(field, args, callback);
 
 }
 // call

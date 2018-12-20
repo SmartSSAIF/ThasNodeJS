@@ -5,7 +5,7 @@ var connMySQL = function(){
 		host : '18.228.197.162',
 		user : 'root',
 		password : 'petequinha',
-		database : 'webduplainter'
+		database : 'thas'
 
 	});
 	// 	return mysql.createConnection({
