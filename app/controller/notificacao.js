@@ -9,12 +9,14 @@ module.exports.get = function (app, req, res) {
         var medico = req.query.medico;
         var enfermeiro = req.query.enfermeiro;
         var mensagem = req.query.mensagem;
+        var dados = req.query.data;
 
 
 
         console.log('admin ', admin);
         console.log('medico ', medico);
         console.log('enfermeiro ', enfermeiro);
+        console.log('dados ', dados);
     
         const { Expo } = require('expo-server-sdk');
         let expo = new Expo();
@@ -41,7 +43,7 @@ module.exports.get = function (app, req, res) {
                         to: pushToken,
                         sound: 'default',
                         body: mensagem,
-                        data: { withSome: 'data' },
+                        data: dados,
                       })
                     }
               
