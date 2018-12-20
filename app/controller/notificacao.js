@@ -25,6 +25,7 @@ module.exports.get = function (app, req, res) {
                 console.log(error);
                 return res.send(401).send("Servidor indisponivel");
             } else {
+                let messages = [];
                 console.log('result ', result);
                 for(let user in result){
                     console.log('User ', user);
@@ -35,7 +36,7 @@ module.exports.get = function (app, req, res) {
                         console.error(`Push token ${pushToken} is not a valid Expo push token`);
                         continue;
                       }
-              
+                    }
                       messages.push({
                         to: pushToken,
                         sound: 'default',
@@ -93,7 +94,7 @@ module.exports.get = function (app, req, res) {
                       }
                     })();
               
-                }
+                
 
                 return res.status(200).send(result);
             }
