@@ -26,7 +26,9 @@ module.exports.get = function (app, req, res) {
                 return res.send(401).send("Servidor indisponivel");
             } else {
                 for(let user in result){
-                    let pushToken = user.token;
+                    console.log(user);
+                    const usuario = JSON.parse(user);
+                    let pushToken = usuario.token;
                     if (!Expo.isExpoPushToken(pushToken)) {
                         console.error(`Push token ${pushToken} is not a valid Expo push token`);
                         continue;
