@@ -18,7 +18,7 @@ module.exports = function(app) {
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
 
-    var query = "INSERT INTO notificacoes (token, nome) values (?,?)";
+    var query = "INSERT INTO notificacao (token, nome) values (?,?)";
 
 
     genericDAO.execute(query, [token, user], function (error, result) {
