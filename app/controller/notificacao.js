@@ -43,7 +43,7 @@ module.exports.get = function (app, req, res) {
                         to: pushToken,
                         sound: 'default',
                         body: mensagem,
-                        data: dados,
+                        data: {info : dados},
                       })
                     }
               
