@@ -9,7 +9,7 @@ module.exports.get = function (app, req, res) {
         var medico = req.get('medico');
         var enfermeiro = req.get('enfermeiro');
 
-        console.log(red.headers);
+        console.log(req.headers);
 
         console.log('admin ', admin);
         console.log('medico ', medico);
