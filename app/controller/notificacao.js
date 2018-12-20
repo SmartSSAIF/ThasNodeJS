@@ -5,9 +5,9 @@ module.exports.get = function (app, req, res) {
 
         var query = "SELECT * FROM notificacao where (medico = 1 and (? = 1)) or (enfermeiro = 1 and (? = 1)) or (admin = 1 and (? = 1))";
      
-        const admin = req.get('admin');
-        const medico = req.get('medico');
-        const enfermeiro = req.get('enfermeiro');
+        var admin = req.get('admin');
+        var medico = req.get('medico');
+        var enfermeiro = req.get('enfermeiro');
 
 
         console.log('admin ', admin);
