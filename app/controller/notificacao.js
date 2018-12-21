@@ -11,8 +11,6 @@ module.exports.get = function (app, req, res) {
         var mensagem = req.query.mensagem;
         var dados = req.query.data;
 
-
-
         console.log('admin ', admin);
         console.log('medico ', medico);
         console.log('enfermeiro ', enfermeiro);
@@ -25,6 +23,7 @@ module.exports.get = function (app, req, res) {
             if (error) {
                 console.log("erro")
                 console.log(error);
+                connection.end();
                 return res.send(401).send("Servidor indisponivel");
             } else {
                 let messages = [];
@@ -97,13 +96,13 @@ module.exports.get = function (app, req, res) {
                     })();
               
                 
-
+                 connection.end();
                 return res.status(200).send(result);
             }
 
 
         });
-        connection.end();
+      
 
 
 }
