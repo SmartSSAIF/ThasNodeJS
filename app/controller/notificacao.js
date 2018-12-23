@@ -40,6 +40,7 @@ module.exports.get = function (app, req, res) {
                     
                       messages.push({
                         to: pushToken,
+                        title: 'THAS',
                         sound: 'default',
                         body: mensagem,
                         data: {info : dados},
