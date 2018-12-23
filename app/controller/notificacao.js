@@ -120,12 +120,14 @@ module.exports.post = function (app, req, res) {
                     if (error) {
                         console.log("erro")
                         console.log(error);
+                        res.status(500).send("ja cadastrado");
                     } else {
+                        connection.end();
                         res.status(200).send(requisicao);
                     }
                 });
 
-                connection.end();
+                
             },
             function () {
                 res.status(400).send({
