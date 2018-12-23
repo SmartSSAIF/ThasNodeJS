@@ -9,7 +9,7 @@ module.exports.get = function (app, req, res) {
             console.log(error);
             res.status(500).send('Servidor indisponível no momento');
         } else {
-            res.status(200).send(result);
+            res.status(200).send(result[0]);
         }
 
     });
