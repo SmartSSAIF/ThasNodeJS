@@ -17,3 +17,8 @@ console.log(options);
 
 https.createServer(options, app).listen(5000, ()=> console.log("Rodando express com HTTPS") );
 
+// app.listen(3000, function () {
+
+//   console.log("Rodando express");
+
+// });
