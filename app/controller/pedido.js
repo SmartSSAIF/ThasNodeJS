@@ -14,9 +14,9 @@ module.exports.get = function (app, req, res) {
 
     });
 
-    
 
-}   
+
+}
 
 module.exports.post = function (app, req, res) {
 
@@ -27,6 +27,15 @@ module.exports.post = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
     var pedidos = [];
 
+
+    // var zerorpc = require("zerorpc");
+
+    // var client = new zerorpc.Client();
+    // client.connect("tcp://127.0.0.1:4242");
+
+    // client.invoke("pedido", [lugar1,lugar2], function (error, res, more) {
+    //     console.log(res);
+    // });
     genericDAO.create(requisicao, "pedido", function (error, result) {
         if (!error) {
             var query = "SELECT * FROM pedidoproduto ORDER BY ID DESC LIMIT 1";
