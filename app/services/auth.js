@@ -1,11 +1,14 @@
 const jwt = require('jsonwebtoken');
+const authConfig = require('../../config/auth');
+
 
 exports.generateToken = async (data) => {
-    return jwt.sign(data, global.SALT_KEY, { expiresIn: '1d' });
+    
+    return jwt.sign(data, authConfig.secret, { expiresIn: '1d' });
 }
 
 exports.decodeToken = async (token) => {
-    var data = await jwt.verify(token, global.SALT_KEY);
+    var data = await jwt.verify(token, authConfig.secret);
     return data;
 }
 
@@ -17,7 +20,7 @@ exports.authorize = function (req, res, next) {
             message: 'Acesso Restrito'
         });
     } else {
-        jwt.verify(token, global.SALT_KEY, function (error, decoded) {
+        jwt.verify(token, authConfig.secret, function (error, decoded) {
             if (error) {
                 res.status(401).json({
                     message: 'Token Inválido'
@@ -37,7 +40,7 @@ exports.isAdmin = function (req, res, next) {
             message: 'Token Inválido'
         });
     } else {
-        jwt.verify(token, global.SALT_KEY, function (error, decoded) {
+        jwt.verify(token, authConfig.secret, function (error, decoded) {
             if (error) {
                 res.status(401).json({
                     message: 'Token Inválido'
