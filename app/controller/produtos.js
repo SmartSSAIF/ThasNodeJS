@@ -7,9 +7,9 @@ module.exports.get = function (app, req, res) {
     genericDAO.execute(query, function (error, result) {
         if (error) {
             console.log(error);
-            res.status(500).send('Servidor indisponível no momento');
+            return res.status(500).send('Servidor indisponível no momento');
         } else {
-            res.status(200).send(result[0]);
+            return res.status(200).send(result[0]);
         }
     });
 }
@@ -22,7 +22,7 @@ module.exports.post = function(app,req,res){
       if (error) {
         console.log("erro")
         console.log(error);
-        return res.status(400).send({produto: 0});
+        return res.status(500).send({produto: 0});
       }
       else {
        return  res.status(200).send({produto: 1});
@@ -48,9 +48,9 @@ module.exports.put = function(app,req,res){
       if (error) {
         console.log("erro")
         console.log(error);
-        return res.status(400).send({ atualizado: 0 });
+        return res.status(500).send({ atualizado: 0 });
       }
-      res.send({ atualizado: 1 })
+      res.status(200).send({ atualizado: 1 })
     });
 
     connection.end();
@@ -66,9 +66,10 @@ module.exports.delete = function(app,req,res){
         if (error) {
           console.log("erro")
           console.log(error);
+          res.status(500).send({ deletado: 0 })
         }
         else {
-          res.send({ deletado: 1 })
+          res.status(200).send({ deletado: 1 })
         }
 
       });
