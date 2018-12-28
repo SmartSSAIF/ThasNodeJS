@@ -3,8 +3,8 @@ module.exports.get = function (app, req, res) {
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
 
-    var query = "call produtos()";
-    genericDAO.execute(query, function (error, result) {
+
+    genericDAO.read("pedido", function (error, result) {
         if (error) {
             console.log(error);
             res.status(500).send('Servidor indisponível no momento');
@@ -33,32 +33,55 @@ module.exports.post = function (app, req, res) {
     // var client = new zerorpc.Client();
     // client.connect("tcp://127.0.0.1:4242");
 
-    // client.invoke("pedido", [lugar1,lugar2], function (error, res, more) {
+    // client.invoke("pedido", ['peteca1','peteca11'], function (error, res, more) {
     //     console.log(res);
     // });
-    genericDAO.create(requisicao, "pedido", function (error, result) {
+
+
+    let date = new Date();
+    let dia = date.getDate();
+    let mes = date.getMonth()+1;
+    let ano = date.getFullYear();
+    let hora = date.getHours();
+    let min = date.getMinutes()
+    var dataFinal =  ano+"-"+mes+"-"+dia+"\t"+hora+":"+min;
+    let data = {
+        data: dataFinal
+    }
+    genericDAO.create(data, "pedido", function (error, resultado) {
         if (!error) {
-            var query = "SELECT * FROM pedidoproduto ORDER BY ID DESC LIMIT 1";
-            genericDAO.execute(query, (error, result) => {
-                for (let i in pedidos) {
-                    console.log("i ", i);
+            var query = "SELECT * FROM pedido ORDER BY id DESC LIMIT 1";
+            genericDAO.execute(query,null, (err, result) => {
+                console.log("pedidresulto produto")
+                if(err){result
+                    console.log(err);
+                    return res.staresulttus(400).send({criarPedido: 0});
+                }
+
+                //for (let i in requisicao.produtos) { //pq o pedidos ta em vetor?
+                if(true){
+                    
                     console.log(result);
                     console.log('Result [0] ', result[0]);
-                    var insert = "INSERT INTO pedidoproduto (idproduto, idpedido) values (?,?);"
-                    genericDAO.execute(insert, [i.id, result[0].id], (error, result) => {
-
+                    var insert = "INSERT INTO pedidoproduto (idproduto, idpedido, origem, destino) values (?,?,?,?);"
+                    genericDAO.execute(insert, [parseInt(requisicao.produtos), parseInt(result[0].id), requisicao.origem, requisicao.destino], (e, result) => {
+                          
+                            if(e){
+                                console.log(e);
+                                return res.status(400).send({cadastraPedido: 0});
+                            }
+                            return res.status(200).send({cadastraPedido: 1});
                     });
                 }
-                res.status(200).send("sei la");
             });
 
         } else {
             console.log(error);
-            res.status(500).send(error);
+            return res.status(500).send(error);
         }
     });
 
-    connection.end();
+    //connection.end();
 }
 
 
