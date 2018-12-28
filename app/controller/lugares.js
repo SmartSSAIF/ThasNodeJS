@@ -17,7 +17,13 @@ module.exports.post = function(app,req,res){
     var requisicao = req.body;
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
-
+    /*
+    Fazer logica conectando com o python, ou seja, add a parte de sentido,
+    e quando add, atualizar o grafo 
+    faça o mesmo para o delete
+    
+    
+    */
     genericDAO.create(requisicao, "lugares", function (error, result) {
       if (error) {
         console.log("erro")

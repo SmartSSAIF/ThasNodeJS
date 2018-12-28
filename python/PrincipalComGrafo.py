@@ -233,6 +233,7 @@ class Comunicacao(object):
         return str(self.caminhoFinal(no.pai))+","+str(no.indice)
 
     def pedido(self,lugares):
+        print("PEDIDO INVOCADO")
         split1 = (self.caminhoFinal(self.buscaCaminho(hashLugares[lugares[0]],hashLugares[lugares[1]],graph)))
         print("split")
         print(split1)

@@ -24,6 +24,7 @@
     "https": "^1.0.0",
     "jsonwebtoken": "^8.4.0",
     "mysql": "^2.16.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.1.6",
+    "zerorpc": "^0.9.8"
   }
 }
