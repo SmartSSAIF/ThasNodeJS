@@ -234,6 +234,7 @@ class Comunicacao(object):
 
     def pedido(self,lugares):
         print("PEDIDO INVOCADO")
+        print(lugares[2],"\t Carro")
         split1 = (self.caminhoFinal(self.buscaCaminho(hashLugares[lugares[0]],hashLugares[lugares[1]],graph)))
         print("split")
         print(split1)
@@ -310,7 +311,7 @@ com.addAresta(hashLugares[("peteca"+str(11))],hashLugares[("peteca"+str(10))])
 
 
 ##Teste
-com.pedido(['peteca1','peteca11'])
+com.pedido(['peteca1','peteca11',0])
 
 
 # print(com.buscaCaminho(hashLugares['peteca1'],hashLugares['peteca11'],graph))

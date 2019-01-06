@@ -34,9 +34,22 @@ module.exports.post = function (app, req, res) {
 
 
     console.log("invoke");
-    client.invoke("pedido", ['peteca1','peteca11'], function (error, res, more) {
-        console.log(res);
-    });
+   
+ 
+        genericDAO.find({estado: true}, 'carros', function(err, result){
+            if(err){
+                console.log(err);
+            }
+            console.log('carros disponiveis')
+            console.log(result);
+            //Fazer logica para selecionar o melhor carro
+            client.invoke("pedido", ['peteca1','peteca11', result[0].id], function (error, res, more) {
+                console.log(res);
+                //.
+                //Enviar instrucoes pelo python por ter comunicação melhor de objetos
+            });
+        });
+    
 
     /*
     Ao fim da invocação, 
