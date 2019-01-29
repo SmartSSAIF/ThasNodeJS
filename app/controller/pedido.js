@@ -31,35 +31,6 @@ module.exports.post = function (app, req, res) {
     var pedidos = [];
 
 
-
-
-    console.log("invoke");
-   
- 
-        genericDAO.find({estado: true}, 'carros', function(err, result){
-            if(err){
-                console.log(err);
-            }
-            console.log('carros disponiveis')
-            console.log(result);
-            //Fazer logica para selecionar o melhor carro
-            client.invoke("pedido", ['peteca1','peteca11', result[0].id], function (error, res, more) {
-                console.log(res);
-                //.
-                //Enviar instrucoes pelo python por ter comunicação melhor de objetos
-            });
-        });
-    
-
-    /*
-    Ao fim da invocação, 
-        *Selecionar o melhor veiculo
-        *Enviar as instruções para o veiculo
-        * -Logica para acompanhar o veiculo
-    */
-    console.log("fim invoke");
-
-
     let date = new Date();
     let dia = date.getDate();
     let mes = date.getMonth() + 1;
@@ -68,11 +39,15 @@ module.exports.post = function (app, req, res) {
     let min = date.getMinutes()
     var dataFinal = ano + "-" + mes + "-" + dia + "\t" + hora + ":" + min;
     let data = {
-        data: dataFinal
+        data: dataFinal,
+        statusPedido: 1,
+        prioridade: requisicao.prioridade
     }
     genericDAO.create(data, "pedido", function (error, resultado) {
         if (!error) {
             var query = "SELECT * FROM pedido ORDER BY id DESC LIMIT 1";
+            //COlocar por exemplo 1- esperando 2 - executando 3- finalizado 4- cancelado
+
             genericDAO.execute(query, null, (err, result) => {
                 console.log("pedidresulto produto")
                 if (err) {
@@ -97,7 +72,33 @@ module.exports.post = function (app, req, res) {
                     });
                 }
             });
+    //----------------------------------------------------------------
+            genericDAO.find({estado: true}, 'carros', function(err, result){
+                if(err){
+                    console.log(err);
+                }
+                console.log('carros disponiveis')
+                console.log(result);
+                //Fazer logica para selecionar o melhor carro
+                // let carroMenorDistancia = 5000;
+                // for(let i=0; i< result.length; i++){
+                //Chamar o rmi pedido, da posicao atual do carro com a origem do pedido(na verdade, fazer outro metodo para verificar a distancia no python), assim descobrir a menor distancia
+                // }
+                client.invoke("pedido", ['peteca1','peteca11', result[0].id], function (error, res, more) {
+                    console.log(res);
+                    //.
+                    //Enviar instrucoes pelo python por ter comunicação melhor de objetos
+                });
+            });
+              /*
+    Ao fim da invocação, 
+        *Selecionar o melhor veiculo
+        *Enviar as instruções para o veiculo
+        * -Logica para acompanhar o veiculo
+    */
 
+    //-------------------------------------------------------------------
+        
         } else {
             console.log(error);
             return res.status(500).send(error);
@@ -114,4 +115,10 @@ module.exports.delete = function (app, req, res) {
 
 module.exports.put = function (app, req, res) {
 
+}
+
+module.exports.testePost = function (app, req, res) {
+        console.log('Teste');
+        console.log(req.body);
+        res.status(200).send(req.body);
 }

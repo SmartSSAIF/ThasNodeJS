@@ -3,6 +3,7 @@ import _thread
 import time
 import json
 import zerorpc
+import requests
 
 # from threading import Thread
 
@@ -23,7 +24,14 @@ hashRfid = {}
 
 pedidos =[]
 semaforoPedidos = threading.Semaphore()
-
+class Instrucao():
+    def  __init__(self, tagA, tagB, angulo, peso, prioridade = 1, no=1):
+        self.no = no
+        self.tagA = tagA
+        self.tagB = tagB
+        self.angulo = angulo
+        self.peso = peso
+        self.prioridade = prioridade
 class Graph(object):
     def __init__(self):
         self.nos = []
@@ -116,50 +124,51 @@ for i in range(18):
     hashLugares[nome] = n ##Trocar o i para RFID ou nao?
     hashRfid[rfid] = n
 
-class Logica(threading.Thread):
+#class Logica(threading.Thread):
+class Logica(object):
     def __init__(self):
         threading.Thread.__init__(self)
         self.portaEnvio = 5015
         self.portaRecebe = 5020
         self.liberado = False
         self.raspberry = "192.168.0.106"
-        self.comunicacao = Comunicacao(hashLugares)
+        # self.comunicacao = Comunicacao(hashLugares)
 
-    def run(self):
-        _thread.start_new(self.listener, tuple())
-        global pedidos
+    # def run(self):
+    #     _thread.start_new(self.listener, tuple())
+    #     global pedidos
 
-        while 1:
-            if(len(pedidos)>0 and self.liberado == True):
-                semaforoPedidos.acquire()
-                try:
-                    pedido = pedidos.pop()
-                    # list = []
-                    # list.append(Item('petecA',1))
-                    # pedido = Pedido(hashLugares['peteca17'],hashLugares['peteca3'],list,"")
-
-
-                    split1 = (self.comunicacao.caminhoFinal(self.comunicacao.buscaCaminho(hashLugares[pedido.de.lugar.nome],hashLugares[pedido.para.lugar.nome],graph)))
-                    print(split1)
-                    split1 = split1.split(',')
-                    instrucoes = ""
-                    for i in range(len(split1)-1):
-                        key = split1[i] + ','+split1[i+1]
-                        instrucoes = instrucoes + (listaArestas[key].toString())+"-"
-                    self.enviaPedido(self.raspberry,instrucoes)
-                finally:
-                    self.liberado = False
-                    semaforoPedidos.release()
-
-            return
+    #     while 1:
+    #         if(len(pedidos)>0 and self.liberado == True):
+    #             semaforoPedidos.acquire()
+    #             try:
+    #                 pedido = pedidos.pop()
+    #                 # list = []
+    #                 # list.append(Item('petecA',1))
+    #                 # pedido = Pedido(hashLugares['peteca17'],hashLugares['peteca3'],list,"")
 
 
-                # Acha De na hash
-                # Acha Para na hash
-                # Busca itens no para
-                # Busca quantidade no item
-                # Busca rota
-                # Envia para Raspberry
+    #                 split1 = (self.comunicacao.caminhoFinal(self.comunicacao.buscaCaminho(hashLugares[pedido.de.lugar.nome],hashLugares[pedido.para.lugar.nome],graph)))
+    #                 print(split1)
+    #                 split1 = split1.split(',')
+    #                 instrucoes = ""
+    #                 for i in range(len(split1)-1):
+    #                     key = split1[i] + ','+split1[i+1]
+    #                     instrucoes = instrucoes + (listaArestas[key].toString())+"-"
+    #                 self.enviaPedido(self.raspberry,instrucoes)
+    #             finally:
+    #                 self.liberado = False
+    #                 semaforoPedidos.release()
+
+    #         return
+
+
+    #             # Acha De na hash
+    #             # Acha Para na hash
+    #             # Busca itens no para
+    #             # Busca quantidade no item
+    #             # Busca rota
+    #             # Envia para Raspberry
     def enviaPedido(self, cliente, mensagem):
         udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         print("Cliente ", cliente)
@@ -184,7 +193,8 @@ class Logica(threading.Thread):
 # comunicacao.start()
 class Comunicacao(object):
     def __init__(self):
-        self.x = 0
+        #self.logica = Logica()
+        x = 0
 
     def setFalse(self,grafo):
         for i in grafo.nos:
@@ -241,13 +251,21 @@ class Comunicacao(object):
         split1 = split1.split(',')
         instrucoes = ""
         saida = []
+        saidaInstrucoes = []
         for i in range(len(split1)-1):
             key = split1[i] + ','+split1[i+1]
             print(listaArestas[key].toString())
             saida.append(listaArestas[key].toString())
+            #saidaInstrucoes.append() passar para objeto
+        #self.logica.enviaPedido("127.0.0.1",str(saida))
+        #self.enviaPost()
         return saida
         
-
+    def enviaPost(self, instrucoes):
+        #Caminho do carrinho
+        r = requests.post("http://localhost:3000/testePost", data={'number': 12524, 'type': 'issue', 'action': 'show'})
+        print(r.status_code, r.reason)
+        print("post realizado")       
     def addAresta(self,noa,nob,angulo=0,peso=1):
         nome = str(noa.indice)+','+str(nob.indice)
         split = nome.split(",")

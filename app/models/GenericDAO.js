@@ -29,7 +29,9 @@ GenericDAO.prototype.execute = async function (field, args, callback) {
 		this._connection.query(field, args, callback);
 	} else this._connection.query(field, callback);
 
+
 }
+
 // call
 module.exports = function () {
 	return GenericDAO;
