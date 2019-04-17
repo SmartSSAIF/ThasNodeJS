@@ -2,17 +2,17 @@ var mysql = require('mysql');
 var connMySQL = function(){
 	console.log("Criou conexao ");
 	return mysql.createConnection({
-		host : '18.228.197.162',
-		user : 'root',
-		password : 'petequinha',
+		host : 'localhost',
+		user : 'local',
+		password : 'p3tecH4mbul4nt3#%&(#',
 		database : 'thas'
 
 	});
 	// 	return mysql.createConnection({
-	// 	host : 'localhost',
-	// 	user : 'peteca',
-	// 	password : 'petecambulante123',
-	// 	database : 'webdupla'
+	// 	host : 'monitor.afterthat.com.br',
+	// 	user : 'monitor',
+	// 	password : 'M0nItorDB*',
+	// 	database : 'thas '
 
 	// });
 };

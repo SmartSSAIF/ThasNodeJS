@@ -10,9 +10,9 @@ module.exports.get = function (app, req, res) {
     genericDAO.read("pedido", function (error, result) {
         if (error) {
             console.log(error);
-            res.status(500).send('Servidor indisponível no momento');
+            return res.status(500).send('Servidor indisponível no momento');
         } else {
-            res.status(200).send(result[0]);
+            return res.status(200).send(result[0]);
         }
 
     });
@@ -110,10 +110,24 @@ module.exports.post = function (app, req, res) {
 
 
 module.exports.delete = function (app, req, res) {
-
 }
 
 module.exports.put = function (app, req, res) {
+    body = req.body;
+    var connection = app.config.dbConnection();
+    var genericDAO = new app.app.models.GenericDAO(connection);
+    let estado = body.estado;
+    let id = body.id;
+    console.log("Id ", {id});
+    console.log("Estado ", {estado});
+    genericDAO.update({estado}, {id},"pedido", function(err, result){
+        if (err){
+            console.log(err)
+            return res.status(400).send({err: 1});
+        }
+        return res.status(200).send(body);
+
+    })
 
 }
 

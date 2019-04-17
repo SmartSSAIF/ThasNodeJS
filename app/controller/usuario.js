@@ -2,9 +2,9 @@ module.exports.get = function (app, req, res) {
 
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
-
-    var query = "select * from lugares";
-    genericDAO.execute(query, function (error, result) {
+    console.log("GET - Usuario")
+    
+    genericDAO.read("usuario", function (error, result) {
         if (error) {
             console.log(error);
             res.status(500).send('Servidor indisponível no momento');
@@ -17,21 +17,15 @@ module.exports.post = function(app,req,res){
     var requisicao = req.body;
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
-    /*
-    Fazer logica conectando com o python, ou seja, add a parte de sentido,
-    e quando add, atualizar o grafo 
-    faça o mesmo para o delete
-    
-    
-    */
-    genericDAO.create(requisicao, "lugares", function (error, result) {
+ 
+    genericDAO.create(requisicao, "usuario", function (error, result) {
       if (error) {
         console.log("erro")
         console.log(error);
-        return res.status(500).send({lugar: 0});
+        return res.status(500).send({usuario: 0});
       }
       else {
-       return  res.status(200).send({lugar: 1});
+       return  res.status(200).send({usuario: 1});
       }
     });
 
@@ -44,11 +38,11 @@ module.exports.put = function(app,req,res){
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
     console.log("update");
-    var lugar  = {
+    var usuario  = {
        
-        nome: requisicao.nome
+        token: requisicao.token
     }
-    genericDAO.update(lugar, { id: requisicao.idLugar }, "lugares", function (error, result) {
+    genericDAO.update(usuario, { id: requisicao.id }, "usuario", function (error, result) {
       if (error) {
         console.log("erro")
         console.log(error);
@@ -62,11 +56,11 @@ module.exports.put = function(app,req,res){
 }
 
 module.exports.delete = function(app,req,res){
-    var lugar = req.body.idLugar;
+    var usuario = req.body.id;
 
       var connection = app.config.dbConnection();
       var genericDAO = new app.app.models.GenericDAO(connection);
-      genericDAO.delete({ id: lugar }, "lugares", function (error, result) {
+      genericDAO.delete({ id: usuario.id }, "usuario", function (error, result) {
         if (error) {
           console.log("erro")
           console.log(error);
