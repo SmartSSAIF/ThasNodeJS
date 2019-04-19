@@ -2,184 +2,105 @@ var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var authConfig = require('../../config/auth');
 var auth = require('../services/auth');
-module.exports.register = function(app, req, res){
-  var connection = app.config.dbConnection();
-  var genericDAO = new app.app.models.GenericDAO(connection);
-  var {username} = req.body;
-  var {password} = req.body;
-  // var usuario = requisicao.usuario;
-  var aluno;
-  var professor;
+var session = require('express-session');
+var flash = require('connect-flash');
+var helmet = require('helmet');
 
+const validaCampos = function (usuario) {
+  var erros = [];
+  console.log('validando')
+  if (isEmpty(usuario.usuario)) {
+    erros.push("Usuario invalido");
+  }
+  if (isEmpty(usuario.senha)) {
+    erros.push("Senha invalida");
+  }
+  return erros;
 
-  try{
+}
+const isEmpty = function (campo) {
+  return campo.length < 2;
+}
+const buscaUsuario = async function (bd, usuario) {
+  return new Promise(function (resolve, reject) {
+    bd.find({ usuario }, "usuario", function (error, result) {
+      if (error) {
+        console.log(error);
+        reject({ usuario: 404 })
 
-   genericDAO.find({usuario: username},"usuario",function(error, result){
-    console.log(result.length)
-    busca = result.length;
-    console.log("busca ", busca)
-    if(result.length > 0){
-      return res.status(400).send("error: usuario ja existente");
+      }
+      resolve(result)
+    })
+  })
+}
+const validaUsuario = function (usuarioBanco, usuarioRequisicao) {
+  if (usuarioBanco.length > 0) {
+    usuarioBanco = usuarioBanco[0];
+    if (validaSenha(usuarioBanco.senha, usuarioRequisicao.senha)) {
+      return true;
     }
     else {
-      if(req.body.aluno == 1){ //Cria aluno
-        aluno = {
-          nome: req.body.nome,
-          email: req.body.email,
-          telefone: req.body.telefone,
-          anoinicio: req.body.anoinicio,
-          curso: req.body.curso,
-          semestre: req.body.semestre,
-          bolsista: req.body.bolsista,
-
-
-        };
-        genericDAO.create(aluno,"aluno", function(err, resultado){
-          if(error){
-            console.log(error);
-            return res.status(400).send("erro ao criar aluno");
-          }
-
-          var senhaCriptografada = crypto.createHash('md5').update(senha).digest('hex');
-          usuario = {
-            usuario: usuario,
-            senha: senhaCriptografada,
-            tipo: 0,
-            aluno: 1,
-            professor: 0,
-            token: "token ",
-          }
-          genericDAO.create(usuario, "usuario", function(error, result){
-
-            if(error){
-              console.log(error);
-              return res.status(400).send("erro ao criar usuario");
-            }
-
-            return res.send({usuario: usuario.usuario, token: token});
-          });
-
-      });
+      return false;
     }
-    if(req.body.professor == 1){ //Cria idProfessor
-      professor = {
-        nome: req.body.professor,
-        email: req.body.email,
-        telefone: req.body.telefone,
-        departamento: req.body.departamento,
-        endereco: req.body.endereco,
-        admin: 0,
-
-      }
-      genericDAO.create(professor,"professor", function(err, resultado){
-        if(error){
-          console.log(error);
-          return res.status(400).send("erro ao criar professor");
-        }
-
-        var senhaCriptografada = crypto.createHash('md5').update(senha).digest('hex');
-        usuario = {
-          usuario: usuario,
-          senha: senhaCriptografada,
-          tipo: 0,
-          aluno: 0,
-          professor: 1,
-          token: "token ",
-        }
-        genericDAO.create(usuario, "usuario", function(error, result){
-
-          if(error){
-            console.log(error);
-            return res.status(400).send("erro ao criar usuario");
-          }
-
-          return res.send({usuario: usuario.usuario, token: token});
-        });
-
-    });
+  } else {
+    return false;
   }
-      }
-    });
-
-
-} catch(err){
-  console.log(err);
 }
+const token = async function (usuario) {
+  if (usuario.length > 0) {
+    usuario = usuario[0]
+    var t = {
+      id: usuario.id,
+      usuario: usuario.usuario,
+      nivel: usuario.nivel
+    }
 
-
-
+    var token = await auth.generateToken(t)
+    return { token }
+  }
 
 }
+const validaSenha = function (senhaBanco, senha) {
+  return crypto.createHash('md5').update(senha).digest('hex') == senhaBanco
+}
+module.exports.autenticar = function (app, req, res) {
 
-module.exports.autenticar = function(app, req, res){
-
-  console.log("autenticar");
-  var usuario = req.body.username;
-  var senha = req.body.password;
+  var requisicao = req.body;
+  var validacao = validaCampos(req.body);
+  if (validacao.length > 0) {
+    return res.status(405).send({ login: validacao })
+  }
   var connection = app.config.dbConnection();
   var genericDAO = new app.app.models.GenericDAO(connection);
-  genericDAO.find({usuario},"usuario",function(error, result){
-    if(error){
-      console.log("erro autenticacao");
-      console.log(error);
-      return res.status(400).send("error: erro ao encontrar usuario");
-
-    }
-    console.log("usuario \n", result);
-    if(result.length === 0){
-      return res.status(400).send("error: usuario inexistente");
-    }else {
-      result = result[0];
-
-      if(crypto.createHash('md5').update(senha).digest('hex') === result.senha){
-        senha = undefined;
-        var campoToken = {
-          id: result.id,
-          admin: result.admin,
-        
-
-
-        };
-        let token = auth.generateToken(campoToken);
-        result.Autenticacao = token;
-
-        genericDAO.update(result,{id: result.id},"usuario",function(error,result){
-          if(error)
-            {	console.log(error)
-              console.log("erro ao salvar token")}})
-        .then(
-          function(){
-            req.session.autorizado = true;
-            req.session.Autenticacao = token;
-            req.session.usuario = usuario;
-            console.log("req session");
-            console.log(req.session);
-                    /*
-                    res.redirect("")
-                    ou nem precisa enviar o token aqui em baixo
-                    */
-                    res.send({id: result.id,usuario: usuario, Autenticacao: token });
-                  }
-                  );
+  let f = async function (genericDAO, usuario) {
+    return await buscaUsuario(genericDAO, usuario)
+  }
+  f(genericDAO, requisicao.usuario).then(function (usuario) {
+    if (validaUsuario(usuario, requisicao)) {
+      let tokenFunction  = async function(usuario){
+      return  await token(usuario);
       }
-
-
-      else {
-        res.status(400).send("error: senha invalida");
-      }
+      tokenFunction(usuario).then(function(tkn){
+        res.header('token',tkn.token);
+        return res.status(200).send(tkn)
+      })
+    
+    } else {
+      return res.status(400).send({ usuario: 'invalido' })
     }
 
-  });
+  })
+
 
 
 }
 
-module.exports.logout = function(app,req,res){
+module.exports.logout = function (app, req, res) {
 
-  req.session.destroy(function(err){
-    if(err){
-      return res.status(400).send({logout: 0});
+  req.session.destroy(function (err) {
+    if (err) {
+      return res.status(400).send({ logout: 0 });
     }
-    res.send({logout: 1});
+    res.send({ logout: 1 });
   })
 }

@@ -1,5 +1,6 @@
+auth = require('./../controller/auth')
 module.exports = function (app) {
-    app.get('/usuario', function (req, res) {
+    app.get('/usuario',auth.verify, function (req, res) {
         app.app.controller.usuario.get(app, req, res);
     });
 

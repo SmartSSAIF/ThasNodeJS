@@ -16,10 +16,10 @@ var connMySQL = function(){
 
 	// });
 		return mysql.createConnection({
-		host : 'monitor.afterthat.com.br',
-		user : 'monitor',
-		password : 'M0nItorDB*',
-		database : 'thas '
+		host : 'afterthat.com.br',
+		user : 'awsbanco1',
+		password : 'petequinha',
+		database : 'thas'
 
 	});
 };
