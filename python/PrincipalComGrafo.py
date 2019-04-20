@@ -8,7 +8,7 @@ import pickle
 # from threading import Thread
 import Model
 import threading
-
+import numpy as np
 
 pontoAtual = "A"
 
@@ -115,15 +115,36 @@ semaforoPedidos = threading.Semaphore()
 
 
 
-for i in range(18):
-    nome = str("peteca"+str(i))
-    rfid = str("rfid"+str(i))
-    l = Model.Lugar(nome,rfid,i)
-    # lugares.append(l)
-    n = Model.Node(l)
-    hashLugares[nome] = n ##Trocar o i para RFID ou nao?
-    hashRfid[rfid] = n
+# for i in range(18):
+#     nome = str("peteca"+str(i))
+#     rfid = str("rfid"+str(i))
+#     l = Model.Lugar(nome,rfid,i)
+#     # lugares.append(l)
+#     n = Model.Node(l)
+#     hashLugares[nome] = n ##Trocar o i para RFID ou nao?
+#     hashRfid[rfid] = n
 
+lugares =  Model.LugarDAO().read()
+for lugar in lugares:
+    n = Model.Node(lugar)
+    hashLugares[lugar.nome] = n
+    hashRfid[lugar.rfid] = n
+
+for lugar in hashLugares:
+    print("\t",hashLugares[lugar].lugar.nome)
+    adjacentes = Model.ArestaDAO().find(hashLugares[lugar].lugar.indice)
+    for adjacente in adjacentes:
+        if adjacente['lugar1'] != hashLugares[lugar].lugar.indice:
+            print("Lugar vizinho ",Model.LugarDAO().find(adjacente['lugar1']).nome)
+            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar1']).nome])
+        else:
+            print("Lugar vizinho ",Model.LugarDAO().find(adjacente['lugar2']).nome)
+            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar2']).nome])
+
+
+
+    
+    
 #class Logica(threading.Thread):
 class Logica(object):
     def __init__(self):
@@ -244,12 +265,14 @@ class Comunicacao(object):
         return str(self.caminhoFinal(no.pai))+","+str(no.indice)
 
     def pedido(self,lugares):
-        print(hashLugares)
-        print("PEDIDO INVOCADO")
+        # print(hashLugares)
+        # print("PEDIDO INVOCADO")
         ##print(lugares[2],"\t Carro")
+        print('tam lugares ',len(lugares))
+        print("Novo pedido ",lugares)
         split1 = (self.caminhoFinal(self.buscaCaminho(hashLugares[lugares[0]],hashLugares[lugares[1]],graph)))
-        print("split")
-        print(split1)
+        # print("split")
+        # print(split1)
         split1 = split1.split(',')
         instrucoes = ""
         saida = []
@@ -258,16 +281,16 @@ class Comunicacao(object):
         saidaTeste = None
         for i in range(len(split1)-1):
             key = split1[i] + ','+split1[i+1]
+            # print(listaArestas[key].toString())
             print(listaArestas[key].toString())
-            saida.append(listaArestas[key].toString())
             saida2.append(listaArestas[key])
             saidaTeste = listaArestas[key] #Apagar <--
             #saidaInstrucoes.append() passar para objeto
         #self.logica.enviaPedido("127.0.0.1",str(saida))
         #self.enviaPost()
-        retorno = pickle.dumps(saida)
-        print('tipo ', type(saidaTeste))
-        return pickle.dumps(saidaTeste)
+        # print('tipo ', type(saidaTeste))
+        
+        return pickle.dumps(saida2)
         
     def enviaPost(self, instrucoes):
         #Caminho do carrinho
@@ -282,27 +305,28 @@ class Comunicacao(object):
         listaArestas[nome2] = Model.Aresta(nob,noa,-1*angulo,-1*peso)
 
 graph = Model.Graph()
-print(hashLugares.keys())
+# print("Chaves ",hashLugares.keys())
 ##Grafo
-hashLugares[("peteca"+str(1))].addAdjacente(hashLugares[("peteca"+str(16))])
-hashLugares[("peteca"+str(16))].addAdjacente(hashLugares[("peteca"+str(17))])
-hashLugares[("peteca"+str(0))].addAdjacente(hashLugares[("peteca"+str(10))])
-hashLugares[("peteca"+str(1))].addAdjacente(hashLugares[("peteca"+str(2))])
-hashLugares[("peteca"+str(3))].addAdjacente(hashLugares[("peteca"+str(2))])
-hashLugares[("peteca"+str(3))].addAdjacente(hashLugares[("peteca"+str(5))])
-hashLugares[("peteca"+str(4))].addAdjacente(hashLugares[("peteca"+str(5))])
-hashLugares[("peteca"+str(2))].addAdjacente(hashLugares[("peteca"+str(4))])
-hashLugares[("peteca"+str(12))].addAdjacente(hashLugares[("peteca"+str(3))])
-hashLugares[("peteca"+str(4))].addAdjacente(hashLugares[("peteca"+str(13))])
-hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(5))])
-hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(7))])
-hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(7))])
-hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(8))])
-hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(8))])
-hashLugares[("peteca"+str(8))].addAdjacente(hashLugares[("peteca"+str(15))])
-hashLugares[("peteca"+str(14))].addAdjacente(hashLugares[("peteca"+str(7))])
-hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(10))])
-hashLugares[("peteca"+str(11))].addAdjacente(hashLugares[("peteca"+str(10))])
+
+# hashLugares[("peteca"+str(1))].addAdjacente(hashLugares[("peteca"+str(16))])
+# hashLugares[("peteca"+str(16))].addAdjacente(hashLugares[("peteca"+str(17))])
+# hashLugares[("peteca"+str(0))].addAdjacente(hashLugares[("peteca"+str(10))])
+# hashLugares[("peteca"+str(1))].addAdjacente(hashLugares[("peteca"+str(2))])
+# hashLugares[("peteca"+str(3))].addAdjacente(hashLugares[("peteca"+str(2))])
+# hashLugares[("peteca"+str(3))].addAdjacente(hashLugares[("peteca"+str(5))])
+# hashLugares[("peteca"+str(4))].addAdjacente(hashLugares[("peteca"+str(5))])
+# hashLugares[("peteca"+str(2))].addAdjacente(hashLugares[("peteca"+str(4))])
+# hashLugares[("peteca"+str(12))].addAdjacente(hashLugares[("peteca"+str(3))])
+# hashLugares[("peteca"+str(4))].addAdjacente(hashLugares[("peteca"+str(13))])
+# hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(5))])
+# hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(7))])
+# hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(7))])
+# hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(8))])
+# hashLugares[("peteca"+str(6))].addAdjacente(hashLugares[("peteca"+str(8))])
+# hashLugares[("peteca"+str(8))].addAdjacente(hashLugares[("peteca"+str(15))])
+# hashLugares[("peteca"+str(14))].addAdjacente(hashLugares[("peteca"+str(7))])
+# hashLugares[("peteca"+str(9))].addAdjacente(hashLugares[("peteca"+str(10))])
+# hashLugares[("peteca"+str(11))].addAdjacente(hashLugares[("peteca"+str(10))])
 
 
 
@@ -313,31 +337,35 @@ for i in hashLugares:
     graph.addNo(hashLugares[i])
 com = Comunicacao()
 
+for lugar in hashLugares:
+    for adj in hashLugares[lugar].adjacentes:
+        if hashLugares[lugar].lugar.nome != adj.lugar.nome:
+            print('Adj ',hashLugares[lugar].lugar.nome,'\t',adj.lugar.nome)
+            com.addAresta(hashLugares[lugar].lugar,adj.lugar)
 
-
-com.addAresta(hashLugares[("peteca"+str(16))],hashLugares[("peteca"+str(17))])
-com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(16))])
-com.addAresta(hashLugares[("peteca"+str(0))],hashLugares[("peteca"+str(10))])
-com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(2))])
-com.addAresta(hashLugares[("peteca"+str(3))],hashLugares[("peteca"+str(2))],90,2)
-com.addAresta(hashLugares[("peteca"+str(3))],hashLugares[("peteca"+str(5))],-90,2)
-com.addAresta(hashLugares[("peteca"+str(4))],hashLugares[("peteca"+str(5))],90,2)
-com.addAresta(hashLugares[("peteca"+str(2))],hashLugares[("peteca"+str(4))],90,2)
-com.addAresta(hashLugares[("peteca"+str(12))],hashLugares[("peteca"+str(3))])
-com.addAresta(hashLugares[("peteca"+str(4))],hashLugares[("peteca"+str(13))])
-com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(5))])
-com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(7))],-90,2)
-com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(7))],90,2)
-com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(8))],-90,2)
-com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(8))],90,2)
-com.addAresta(hashLugares[("peteca"+str(8))],hashLugares[("peteca"+str(15))])
-com.addAresta(hashLugares[("peteca"+str(14))],hashLugares[("peteca"+str(7))])
-com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(10))])
-com.addAresta(hashLugares[("peteca"+str(11))],hashLugares[("peteca"+str(10))])
+# com.addAresta(hashLugares[("peteca"+str(16))],hashLugares[("peteca"+str(17))])
+# com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(16))])
+# com.addAresta(hashLugares[("peteca"+str(0))],hashLugares[("peteca"+str(10))])
+# com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(2))])
+# com.addAresta(hashLugares[("peteca"+str(3))],hashLugares[("peteca"+str(2))],90,2)
+# com.addAresta(hashLugares[("peteca"+str(3))],hashLugares[("peteca"+str(5))],-90,2)
+# com.addAresta(hashLugares[("peteca"+str(4))],hashLugares[("peteca"+str(5))],90,2)
+# com.addAresta(hashLugares[("peteca"+str(2))],hashLugares[("peteca"+str(4))],90,2)
+# com.addAresta(hashLugares[("peteca"+str(12))],hashLugares[("peteca"+str(3))])
+# com.addAresta(hashLugares[("peteca"+str(4))],hashLugares[("peteca"+str(13))])
+# com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(5))])
+# com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(7))],-90,2)
+# com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(7))],90,2)
+# com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(8))],-90,2)
+# com.addAresta(hashLugares[("peteca"+str(6))],hashLugares[("peteca"+str(8))],90,2)
+# com.addAresta(hashLugares[("peteca"+str(8))],hashLugares[("peteca"+str(15))])
+# com.addAresta(hashLugares[("peteca"+str(14))],hashLugares[("peteca"+str(7))])
+# com.addAresta(hashLugares[("peteca"+str(9))],hashLugares[("peteca"+str(10))])
+# com.addAresta(hashLugares[("peteca"+str(11))],hashLugares[("peteca"+str(10))])
 
 
 ##Teste
-com.pedido(['peteca1','peteca11',0])
+# com.pedido(['peteca1','peteca11',0])
 
 
 # print(com.buscaCaminho(hashLugares['peteca1'],hashLugares['peteca11'],graph))
@@ -353,8 +381,7 @@ com.pedido(['peteca1','peteca11',0])
 
 
 
-
-print("Rfid "+hashRfid['rfid6'].lugar.nome)
+# print("Rfid "+hashRfid['rfid6'].lugar.nome)
 # logica = Logica()
 # logica.start()
 

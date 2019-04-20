@@ -1,4 +1,6 @@
 import pymysql
+import requests
+
 class DB:
     banco = None
 
@@ -8,17 +10,53 @@ class DB:
         return cls.banco
 
     def __init__(self):
-        self.db = pymysql.connect(host="localhost", user="local",
-                                  passwd="p3tecH4mbul4nt3#%&(#*", db="thas")
+        self.db = pymysql.connect(host="afterthat.com.br", user="awsbanco1",
+                                  passwd="petequinha", db="thas")
+class LugarDAO():
+  def __init__(self):
+    self.db = DB().db
+  def read(self):
+    cur = self.db.cursor()
+    cur.execute('select * from lugares where id > 0')
+    lugares = []
+    lugaresBD = curToObj(cur)
+    lugares = []
+    for i in lugaresBD:
+      lugares.append(Lugar(i['nome'],i['rfid'],i['id']))
+    return lugares
+  def find(self, id):
+    cur = self.db.cursor()
+    cur.execute('select * from lugares where id =%s',[id])
+    lugar =  curToObj(cur)
+    print(lugar)
+    if len(lugar)>0:
+      lugar = lugar[0]
+    print("Lugar id ", lugar['id'])
+    return Lugar(lugar['nome'],lugar['rfid'],lugar['id'])
+class ArestaDAO():
+  def __init__(self):
+    self.db = DB().db
+  def read(self):
+    cur = self.db.cursor()
+    cur.execute('select * from aresta')
+    arestasBD = curToObj(cur)
+    arestas = []
+    for aresta in arestasBD:
+      arestas.append(Aresta(Node(LugarDAO().find(aresta['lugar1'])),Node(LugarDAO().find(aresta['lugar2'])), aresta['angulo'],aresta['peso']))
 
-
+    return arestas
+  def find(self, lugar):
+    cur = self.db.cursor()
+    cur.execute('select * from aresta where lugar1 = %s or lugar2 = %s',[lugar,lugar])
+    return curToObj(cur)
+  
 class PedidoDAO():
   def __init__(self):
     self.db = DB().db
   def findPedidosNaFila(self):
     cur = self.db.cursor()
     cur.execute('select * from pedido where statusPedido = 1 order by prioridade desc')
-    return cur.fetchall()
+    return curToObj(cur)
   def find(self, id):
     return PedidoProdutoDAO().findProdutosAndPedido(id)
     # cur = self.db.cursor()
@@ -69,7 +107,14 @@ class PedidoProdutoDAO():
       produto = cur.fetchone()
       pedido.produtos.append(Produto(produto[0],produto[1],produto[2],produto[3]))
     return pedido
-
+def curToObj( cur):
+    row_headers = [x[0] for x in cur.description]
+    rv = cur.fetchall()
+    json_data = []
+    for result in rv:
+      # print(result)
+      json_data.append(dict(zip(row_headers, result)))
+    return (json_data)
 class ProdutoDAO():
   def __init__(self):
     self.db = DB().db
@@ -87,11 +132,27 @@ class CarroDAO():
   def findFree(self):
     cur = self.db.cursor()
     cur.execute('select * from carros where estado = %s',[1])
-    carro =  cur.fetchall()
+    # carro =  cur.fetchall()
+    carro= curToObj(cur)
+    # print(c)
+    print('carros ', len(carro))
     carros = []
     for i in carro:
-      carros.append(Carro(i[0], i[1], i[2], i[3]))
+      print(i)
+      carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual']))
     return carros
+  def updateStatus(self, id, estado):
+    try:
+
+      cur = self.db.cursor()
+      print('tentando')
+      cur.execute('UPDATE carros SET estado=%s WHERE id=%s',[estado, id])
+      self.db.commit()
+      s = cur.fetchall()
+      print(s)
+      print('foi')
+    except Exception as e:
+      print(e)
 class Pedido2(object):
   def __init__(self, id, data, statusPedido, prioridade, origem, destino):
     self.id = id
@@ -101,11 +162,14 @@ class Pedido2(object):
     self.origem = origem
     self.destino = destino
     self.produtos = []
+    self.instrucoes = None
+  def setInstrucoes(self, instrucoes):
+    self.instrucoes = instrucoes
 
-class Lugar(object):
-  def __init__(self, id, nome):
-    self.id=id
-    self.nome=nome
+# class Lugar(object):
+#   def __init__(self, id, nome):
+#     self.id=id
+#     self.nome=nome
 class Carro(object):
   def __init__(self, id, ip, estado, localizacaoAtual) :
     self.id = id
@@ -128,6 +192,7 @@ class Instrucao():
         self.angulo = angulo
         self.peso = peso
         self.prioridade = prioridade
+
 
 class Graph(object):
     def __init__(self):
@@ -189,7 +254,7 @@ class Aresta(object):
 class Rfid(object):
     def __init__(self, codigo):
         self.codigo = codigo
-class Lugar():
+class Lugar(object):
     def __init__(self,nome, rfid, id):
         self.indice = id
         self.nome = nome
@@ -199,12 +264,19 @@ class Lugar():
 
 
 class Item():
-    def __init__(self, nome,quantidade):
-        self.nome = nome
-        self.quantidade = quantidade
+    def __init__(self, id,nome,quantidade):
+      self.id = id
+      self.nome = nome
+      self.quantidade = quantidade
 class Pedido():
     def __init__(self,de,para,itens,dados):
         self.de = de
         self.para = para
         self.itens = itens
         self.dados = dados
+
+class Comunicacao():
+  def enviaInstrucoes(self, carro, instrucoes):
+    r = requests.post("http://localhost:3001/teste", data=instrucoes)
+    print(r.status_code, r.reason)
+    print(r.text[:300] + '...')
