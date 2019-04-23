@@ -91,7 +91,7 @@ module.exports.putIsWorking = function (app, req, res) {
   console.log("update");
   var campos = {
 
-    isWorking: requisicao.isWorking
+    isWorking: Number(requisicao.isWorking=='true')
   }
   auth.converteToken(req, "autenticacao", function (usuario) {
 

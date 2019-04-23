@@ -1,4 +1,4 @@
-var cn = require('./../../config/dbConnection');
+var cn = require('./../../config/dbConnection')();
 var db = require('./GenericDAO');
 class SingletonCarros {
 
@@ -19,10 +19,14 @@ class SingletonCarros {
   getCarros(){
     console.log('get carros')
     var dao = new db(cn)
-    console.log(dao.name)
-    // dao.prototype.read('carro', function(err, res) {
+  //   try{
+  //   console.log(dao.name)
+  //   dao.prototype.read('carro', function(err, res) {
       
-    // })
+  //   })
+  // }catch(e){
+  //   console.log(e)
+  // }
     }
     
 
