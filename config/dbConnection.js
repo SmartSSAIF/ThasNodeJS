@@ -1,6 +1,5 @@
 var mysql = require('mysql');
 var connMySQL = function(){
-	console.log("Criou conexao ");
 	// return mysql.createConnection({
 	// 	host : '192.168.15.254',
 	// 	user : 'monitor',
