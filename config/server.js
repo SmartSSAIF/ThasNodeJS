@@ -6,7 +6,23 @@ var expressValidator = require('express-validator');
 var authConfig = require('./auth');
 const https = require('https');
 // var webSocket = require('./../app/models/webSocket')
-var criaWebSockets = require('./../app/models/criaWebSockets')()
+// var criaWebSockets = require('./../app/models/criaWebSockets')()
+var Singleton = require('./../app/models/singletonCarrosWs');
+console.log('TYPE ', typeof Singleton)
+
+var logger = Singleton.getInstance().getCarros();
+
+// class Store {
+
+//     constructor(name, inventory=[]) {
+//         this.name = name;
+//         this.inventory = inventory;
+//         logger.log(`New Store: ${name} has ${inventory.length} items in stock.`);
+//     }
+
+// }
+
+// module.exports = Store;
 //var jquery = require('jQuery');
 var cors = require('cors');
 

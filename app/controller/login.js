@@ -95,7 +95,9 @@ module.exports.autenticar = function (app, req, res) {
         s = {
           'token': tkn.token,
           'usuario':usuario[0].usuario,
-          'email': usuario[0].email
+          'email': usuario[0].email,
+          'id': usuario[0].id,
+          'notificacao': usuario[0].token
         }
         return res.status(200).send(s)
       })

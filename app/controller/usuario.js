@@ -13,6 +13,31 @@ module.exports.get = function (app, req, res) {
         }
     });
 }
+module.exports.getIsWorking = function (app, req, res) {
+
+  var connection = app.config.dbConnection();
+  var genericDAO = new app.app.models.GenericDAO(connection);
+  console.log("GET - Usuario")
+  
+  genericDAO.find({id: req.body.id},"usuario", function (error, result) {
+      if (error) {
+          console.log(error);
+          res.status(500).send('Servidor indisponível no momento');
+      } else {
+        var user = result[0];
+        r = {
+          "id": user.id,
+          "usuario": user.usuario,
+        
+          "nivel": user.nivel,
+          "notificacao": user.token,
+          "email": user.email,
+          "isWorking": user.isWorking
+        }
+          res.status(200).send(r);
+      }
+  });
+}
 module.exports.post = function(app,req,res){
     var requisicao = req.body;
     var connection = app.config.dbConnection();
@@ -52,6 +77,28 @@ module.exports.put = function(app,req,res){
     });
 
     connection.end();
+
+}
+module.exports.putIsWorking = function(app,req,res){
+  var requisicao = req.body;
+  console.log(requisicao)
+  var connection = app.config.dbConnection();
+  var genericDAO = new app.app.models.GenericDAO(connection);
+  console.log("update");
+  var usuario  = {
+     
+    isWorking: requisicao.isWorking
+  }
+  genericDAO.update(usuario, { id: requisicao.id }, "usuario", function (error, result) {
+    if (error) {
+      console.log("erro")
+      console.log(error);
+      return res.status(500).send({ atualizado: 0 });
+    }
+    res.status(200).send({ atualizado: 1 })
+  });
+
+  connection.end();
 
 }
 

@@ -3,6 +3,9 @@ module.exports = function (app) {
     app.get('/usuario',auth.verify, function (req, res) {
         app.app.controller.usuario.get(app, req, res);
     });
+    app.get('/usuario/isWorking',auth.verify, function (req, res) {
+        app.app.controller.usuario.getIsWorking(app, req, res);
+    });
 
 
     app.post('/usuario', auth.verify,function (req, res) {
@@ -16,5 +19,8 @@ module.exports = function (app) {
 
     app.put('/usuario',auth.verify, function (req, res) {
         app.app.controller.usuario.put(app, req, res);
+    });
+    app.put('/usuario/isWorking',auth.verify, function (req, res) {
+        app.app.controller.usuario.putIsWorking(app, req, res);
     });
 }
