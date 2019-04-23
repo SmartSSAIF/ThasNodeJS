@@ -130,7 +130,7 @@ module.exports.put = function (app, req, res) {
 
 }
 
-module.exports.testePost = function (app, req, res) {
+module.exports.post = function (app, req, res) {
         console.log('Teste');
         console.log(req.body);
         res.status(200).send(req.body);

@@ -1,13 +1,14 @@
 
-// const connection = require('./../../config/dbConnection')
-// const generic = require('./GenericDAO')
+const connection = require('./../../config/dbConnection')
+const generic = require('./GenericDAO')
 
-// module.exports = function (porta) {
-//    	return criaWebSockets();
-// }
-// function criaWebSockets(){
-//   console.log('chegou')
-//   var genericDAO = new generic(connection)
+module.exports = function (porta) {
+   	return criaWebSockets();
+}
+function criaWebSockets(){
+  console.log('chegou')
+  var genericDAO = new generic(connection)
+  console.log(typeof genericDAO)
 //   genericDAO.read('carro', function(error, result){
 //         if(error){
 //             console.log(error)
@@ -15,4 +16,4 @@
 //         }
 //         console.log(result)
 //     });
-// }
+}

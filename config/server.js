@@ -6,7 +6,7 @@ var expressValidator = require('express-validator');
 var authConfig = require('./auth');
 const https = require('https');
 // var webSocket = require('./../app/models/webSocket')
-// var criaWebSockets = require('./../app/models/criaWebSockets')
+var criaWebSockets = require('./../app/models/criaWebSockets')()
 //var jquery = require('jQuery');
 var cors = require('cors');
 
