@@ -25,8 +25,9 @@ module.exports.verify = async function(req, res,next){
 
 
   } );
-
-module.exports.converteToken = async function(req, titulo, funcao){
+}
+module.exports.converteToken =  function(req, titulo, funcao){
+	console.log('converte')
 		var token = req.header(titulo);
 		jwt.verify(token,authConfig.secret, function(error, decoded){
 
@@ -40,7 +41,7 @@ module.exports.converteToken = async function(req, titulo, funcao){
 		} );
 
 }
-}
+
 module.exports.getValuesToken = function(token){
 	jwt.verify(token,authConfig.secret, function(error, decoded){
 

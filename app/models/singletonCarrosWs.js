@@ -18,8 +18,8 @@ class SingletonCarros {
   }
   getCarros(){
     console.log('get carros')
-    var dao = new db(cn)
-    console.log(dao.name)
+    // var dao = new db(cn)
+    // console.log(dao.name)
     // dao.prototype.read('carro', function(err, res) {
       
     // })

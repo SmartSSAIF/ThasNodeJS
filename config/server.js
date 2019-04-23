@@ -10,7 +10,7 @@ const https = require('https');
 var Singleton = require('./../app/models/singletonCarrosWs');
 console.log('TYPE ', typeof Singleton)
 
-var logger = Singleton.getInstance().getCarros();
+// var logger = Singleton.getInstance().getCarros();
 
 // class Store {
 
@@ -63,7 +63,7 @@ app.use(function(req, res, next) {
 //app.use(jquery)
 app.use(expressValidator());
 
-
+// app.use(Singleton().getInstance())
 //autoload das rotas e modulos do objeto app
 consign()
 	.include('app/routes')

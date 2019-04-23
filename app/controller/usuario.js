@@ -1,3 +1,4 @@
+var auth = require('./auth')
 module.exports.get = function (app, req, res) {
 
     var connection = app.config.dbConnection();
@@ -18,8 +19,9 @@ module.exports.getIsWorking = function (app, req, res) {
   var connection = app.config.dbConnection();
   var genericDAO = new app.app.models.GenericDAO(connection);
   console.log("GET - Usuario")
-  
-  genericDAO.find({id: req.body.id},"usuario", function (error, result) {
+  auth.converteToken(req,"autenticacao", function(usuario){
+    console.log(usuario)
+    genericDAO.find({id: usuario.id},"usuario", function (error, result) {
       if (error) {
           console.log(error);
           res.status(500).send('Servidor indisponível no momento');
@@ -37,6 +39,8 @@ module.exports.getIsWorking = function (app, req, res) {
           res.status(200).send(r);
       }
   });
+  })
+
 }
 module.exports.post = function(app,req,res){
     var requisicao = req.body;
