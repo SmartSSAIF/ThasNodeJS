@@ -7,10 +7,11 @@ var authConfig = require('./auth');
 const https = require('https');
 // var webSocket = require('./../app/models/webSocket')
 // var criaWebSockets = require('./../app/models/criaWebSockets')()
-var Singleton = require('./../app/models/singletonCarrosWs').getInstance().getCarros();
+var Singleton = require('./../app/models/singletonCarrosWs');
 console.log('TYPE ', typeof Singleton)
 
-// Singleton.getInstance().getCarros();
+var s = Singleton.getInstance()
+s.getCarros();
 
 // class Store {
 

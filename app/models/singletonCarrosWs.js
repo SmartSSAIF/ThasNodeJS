@@ -4,6 +4,14 @@ class SingletonCarros {
 
   constructor() {
     console.log('construtor carro')
+    // console.log(typeof cn)
+    // console.log(cn.name)
+    // var d = db(cn);
+    // console.log(typeof d);
+    // console.log(d.name)
+    // d.read('carro', function(err,res){
+    //   console.log(res)
+    // })
       this.logs = [];
   }
 
@@ -17,8 +25,10 @@ class SingletonCarros {
       console.log(`${timestamp} - ${message}`);
   }
   getCarros(){
-    console.log('get carros')
-    var dao = new db(cn)
+    console.log('get carros') ;
+     
+
+  //   var dao = new db(cn)
   //   try{
   //   console.log(dao.name)
   //   dao.prototype.read('carro', function(err, res) {

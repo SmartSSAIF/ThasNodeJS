@@ -6,12 +6,29 @@ module.exports.get = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
 
 
-    genericDAO.read("pedido", function (error, result) {
+    genericDAO.execute("select * from pedido, pedidoproduto where pedido.id = pedidoproduto.idPedido    ", function (error, result) {
         if (error) {
             console.log(error);
             return res.status(500).send('Servidor indisponível no momento');
         } else {
-            return res.status(200).send(result[0]);
+            genericDAO.read('lugares', function (err, lugares) {
+ 
+
+                var dict = []; // create an empty array
+                for (var j = 0; j< lugares.length; j++){
+                dict.push({
+                    key: lugares[j].id,
+                    value: lugares[j].nome
+                });
+            }
+                for (var i = 0; i < result.length; i++) {
+    
+                    result[i].origem = dict[result[i].origem].value;
+                    result[i].destino = dict[result[i].destino].value
+                }
+                return res.status(200).send(result);
+            })
+
         }
 
     });
@@ -97,7 +114,7 @@ module.exports.get = function (app, req, res) {
 //     */
 
 //     //-------------------------------------------------------------------
-        
+
 //         } else {
 //             console.log(error);
 //             return res.status(500).send(error);
@@ -117,12 +134,12 @@ module.exports.put = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
     let estado = body.estado;
     let id = body.id;
-    console.log("Id ", {id});
-    console.log("Estado ", {estado});
-    genericDAO.update({estado}, {id},"pedido", function(err, result){
-        if (err){
+    console.log("Id ", { id });
+    console.log("Estado ", { estado });
+    genericDAO.update({ estado }, { id }, "pedido", function (err, result) {
+        if (err) {
             console.log(err)
-            return res.status(400).send({err: 1});
+            return res.status(400).send({ err: 1 });
         }
         return res.status(200).send(body);
 
@@ -131,7 +148,7 @@ module.exports.put = function (app, req, res) {
 }
 
 module.exports.post = function (app, req, res) {
-        console.log('Teste');
-        console.log(req.body);
-        res.status(200).send(req.body);
+    console.log('Teste');
+    console.log(req.body);
+    res.status(200).send(req.body);
 }
