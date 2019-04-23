@@ -29,13 +29,18 @@ const buscaUsuario = async function (bd, usuario) {
         reject({ usuario: 404 })
 
       }
+      console.log("usuario ", result)
       resolve(result)
     })
   })
 }
 const validaUsuario = function (usuarioBanco, usuarioRequisicao) {
+  console.log(usuarioBanco)
+  console.log('tamanho ', usuarioBanco.length)
   if (usuarioBanco.length > 0) {
     usuarioBanco = usuarioBanco[0];
+
+
     if (validaSenha(usuarioBanco.senha, usuarioRequisicao.senha)) {
       return true;
     }
@@ -66,7 +71,10 @@ const validaSenha = function (senhaBanco, senha) {
 module.exports.autenticar = function (app, req, res) {
 
   var requisicao = req.body;
+  console.log(requisicao)
+
   var validacao = validaCampos(req.body);
+  console.log(validacao)
   if (validacao.length > 0) {
     return res.status(405).send({ login: validacao })
   }
@@ -77,14 +85,15 @@ module.exports.autenticar = function (app, req, res) {
   }
   f(genericDAO, requisicao.usuario).then(function (usuario) {
     if (validaUsuario(usuario, requisicao)) {
-      let tokenFunction  = async function(usuario){
-      return  await token(usuario);
+      console.log("usuario validado")
+      let tokenFunction = async function (usuario) {
+        return await token(usuario);
       }
-      tokenFunction(usuario).then(function(tkn){
-        res.header('token',tkn.token);
+      tokenFunction(usuario).then(function (tkn) {
+        res.header('token', tkn.token);
         return res.status(200).send(tkn)
       })
-    
+
     } else {
       return res.status(400).send({ usuario: 'invalido' })
     }

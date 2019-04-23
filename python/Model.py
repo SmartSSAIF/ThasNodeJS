@@ -1,5 +1,6 @@
 import pymysql
 import requests
+from threading import Thread
 
 class DB:
     banco = None
@@ -244,7 +245,14 @@ class Aresta(object):
         self.noB = noB
         self.peso = peso
         self.angulo = angulo # 0 reto 1 costas ### 2 direito 3 esquerdo
-
+    def toJson(self):
+      r = {
+        'origem':self.noA.nome,
+        'destino':self.noB.nome,
+        'peso':self.peso,
+        'angulo':self.angulo
+      }
+      return r
     def toString(self):
         return "No " +str(self.noA.indice)+":"+str(self.noA.rfid.codigo)+" No "+str(self.noB.indice)+":"+str(self.noB.rfid.codigo)+" \tAngulo "+str(self.angulo)+"º \tPeso "+str(self.peso)
 
@@ -274,9 +282,22 @@ class Pedido():
         self.para = para
         self.itens = itens
         self.dados = dados
+class Comunicacao(Thread):
+  def __init__(self, carro, instrucoes):
+    Thread.__init__(self)
+    self.carro = carro
+    self.instrucoes = instrucoes
+  def run(self):
+    for i in self.instrucoes:
+      print(type(self.instrucoes))
+      print(i.noA.nome)
+      self.enviaInstrucoes(self.carro.ip, i.toJson())
 
-class Comunicacao():
-  def enviaInstrucoes(self, carro, instrucoes):
-    r = requests.post("http://localhost:3001/teste", data=instrucoes)
+  def enviaInstrucoes(self, carro, instrucao):
+    print(type(carro))
+
+    a = {'carro':carro,'inst': instrucao}
+    print(a)
+    r = requests.post("http://localhost:3001/teste", data=instrucao)
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')

@@ -124,7 +124,6 @@ class DB:
 #     self.lugar = lugar
 #     self.nomeLugar = nomeLugar
 
-comunicacao = Comunicacao()
 
 
 c = zerorpc.Client()
@@ -132,35 +131,26 @@ c.connect("tcp://127.0.0.1:5005")
 ##Busca fila de pedidos e converte para objeto pedido
 fila = PedidoDAO().findPedidosNaFila()
 filaPedido = []
+while True:
+  for i in fila:
+    filaPedido.append(PedidoDAO().find(i['id']))
+  instrucaoAtual = filaPedido.pop(0)
 
-for i in fila:
-  filaPedido.append(PedidoDAO().find(i['id']))
-print("Tirado ",filaPedido.pop(0).id)
-instrucaoAtual = filaPedido.pop(0)
-print(type(instrucaoAtual)) ##ta chegando o peso, reve isso ai
-print(instrucaoAtual.id)
-print(instrucaoAtual.data)
-print(instrucaoAtual.origem)
-if len(filaPedido)>0:
-  carros = CarroDAO().findFree()
-  print('tem fila ',len(carros))
-  if len(carros) > 0:
-    print('carro livre')
-    carro = carros[0] ##Logica para buscar o melhor carro disponivel
-    # CarroDAO().updateStatus(carro.id,0)
-    print("Pedido atual ", filaPedido[0].id)
-    print(filaPedido[0].origem, '\t',filaPedido[0].destino)
-    ob = c.pedido([LugarDAO().find(filaPedido[0].origem).nome,LugarDAO().find(filaPedido[0].destino).nome])
-    print(type(pickle.loads(ob)))
-    instrucoes = pickle.loads(ob)
-    print(len(instrucoes))
-    
-    # for instrucao in instrucoes:
-    #   print(type(instrucao))
-    #   print(json.dumps(instrucao))
+  if len(filaPedido)>0:
+    print("Pedido")
+    carros = CarroDAO().findFree()
+    if len(carros) > 0:
 
-    comunicacao.enviaInstrucoes('carro', {'instrucao': 'go'})
-    instrucaoAtual.setInstrucoes(instrucoes)
+      carro = carros[0] ##Logica para buscar o melhor carro disponivel
+      CarroDAO().updateStatus(carro.id,0)
+      ob = c.pedido([LugarDAO().find(filaPedido[0].origem).nome,LugarDAO().find(filaPedido[0].destino).nome])
+      instrucoes = pickle.loads(ob)
+      # for instrucao in instrucoes:
+      #   print(type(instrucao))
+      #   print(json.dumps(instrucao))
+
+      Comunicacao(carro, instrucoes).start()
+      instrucaoAtual.setInstrucoes(instrucoes)
 
   
   

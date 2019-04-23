@@ -39,6 +39,18 @@ module.exports.converteToken = async function(req, titulo, funcao){
 
 }
 }
+module.exports.getValuesToken = function(token){
+	jwt.verify(token,authConfig.secret, function(error, decoded){
+
+		if(error) {
+			console.log(error);
+			return null;
+		}
+
+return decoded;
+
+} );
+}
 module.exports.middleware = function(app,req,res, funcao){
 	// if(req.session.autenticado){
 

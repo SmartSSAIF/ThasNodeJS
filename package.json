@@ -30,6 +30,8 @@
     "mysql": "^2.16.0",
     "pickle": "^0.2.0",
     "request": "^2.88.0",
-    "typescript": "^3.1.6"
+    "typescript": "^3.1.6",
+    "websocket": "^1.0.28",
+    "ws": "^6.2.1"
   }
 }
