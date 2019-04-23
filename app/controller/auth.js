@@ -10,7 +10,9 @@ module.exports.verify = async function(req, res,next){
 	var token = req.header("Autenticacao");	
 	var tt = req.header('token')
 	console.log("Token ",token)
+	console.log(req.headers)
 	console.log(tt)
+
   jwt.verify(token,authConfig.secret, function(error, decoded){
 
       if(error) {
