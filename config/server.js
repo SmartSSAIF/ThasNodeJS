@@ -5,6 +5,8 @@ var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 var authConfig = require('./auth');
 const https = require('https');
+// var webSocket = require('./../app/models/webSocket')
+// var criaWebSockets = require('./../app/models/criaWebSockets')
 //var jquery = require('jQuery');
 var cors = require('cors');
 
@@ -40,12 +42,10 @@ app.use(function(req, res, next) {
   next();
 });
 
-  
 
 // app.use(cors());
 //app.use(jquery)
 app.use(expressValidator());
-
 
 
 //autoload das rotas e modulos do objeto app
@@ -56,4 +56,5 @@ consign()
 	.then('app/controller')
 	.into(app);
 
+// var ws =  new webSocket()
 module.exports = app;

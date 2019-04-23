@@ -83,9 +83,7 @@ class PedidoDAO():
       print('tentando')
       cur.execute('UPDATE pedido SET statusPedido=%s WHERE id=%s',[status, id])
       self.db.commit()
-      s = cur.fetchall()
-      print(s)
-      print('foi')
+      cur.fetchone()
     except Exception as e:
       print(e)
 class PedidoProdutoDAO():

@@ -129,29 +129,34 @@ class DB:
 c = zerorpc.Client()
 c.connect("tcp://127.0.0.1:5005")
 ##Busca fila de pedidos e converte para objeto pedido
-fila = PedidoDAO().findPedidosNaFila()
-filaPedido = []
+
 while True:
+  fila = PedidoDAO().findPedidosNaFila()
+  filaPedido = []
   for i in fila:
     filaPedido.append(PedidoDAO().find(i['id']))
-  instrucaoAtual = filaPedido.pop(0)
-
+  
+  # instrucaoAtual = filaPedido.pop(0)
+  
   if len(filaPedido)>0:
     print("Pedido")
+    pedido = filaPedido.pop(0)
+    print(type(pedido))
     carros = CarroDAO().findFree()
     if len(carros) > 0:
 
       carro = carros[0] ##Logica para buscar o melhor carro disponivel
-      CarroDAO().updateStatus(carro.id,0)
-      ob = c.pedido([LugarDAO().find(filaPedido[0].origem).nome,LugarDAO().find(filaPedido[0].destino).nome])
+      # CarroDAO().updateStatus(carro.id,0)
+      ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
       instrucoes = pickle.loads(ob)
       # for instrucao in instrucoes:
       #   print(type(instrucao))
       #   print(json.dumps(instrucao))
 
       Comunicacao(carro, instrucoes).start()
-      instrucaoAtual.setInstrucoes(instrucoes)
-
+      PedidoDAO().updateStatus(pedido.id,0)
+      pedido.setInstrucoes(instrucoes)
+  
   
   
 

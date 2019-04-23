@@ -91,9 +91,11 @@ module.exports.autenticar = function (app, req, res) {
       }
       tokenFunction(usuario).then(function (tkn) {
         // res.header('token', tkn.token);
+        console.log(usuario)
         s = {
           'token': tkn.token,
-          'usuario':usuario[0].usuario 
+          'usuario':usuario[0].usuario,
+          'email': usuario[0].email
         }
         return res.status(200).send(s)
       })
