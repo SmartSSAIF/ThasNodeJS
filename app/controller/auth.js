@@ -7,7 +7,7 @@ module.exports.generationToken = function(params){
 }
 module.exports.verify = async function(req, res,next){
 	console.log('verify')
-	var token = req.header("Autenticacao");	
+	var token = req.header("autenticacao");	
 	var tt = req.header('token')
 	console.log("Token ",token)
 	console.log(req.headers)
