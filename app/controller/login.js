@@ -90,8 +90,12 @@ module.exports.autenticar = function (app, req, res) {
         return await token(usuario);
       }
       tokenFunction(usuario).then(function (tkn) {
-        res.header('token', tkn.token);
-        return res.status(200).send(tkn)
+        // res.header('token', tkn.token);
+        s = {
+          'token': tkn.token,
+          'usuario':usuario[0].usuario 
+        }
+        return res.status(200).send(s)
       })
 
     } else {
