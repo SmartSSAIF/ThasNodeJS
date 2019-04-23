@@ -14,6 +14,7 @@ var connMySQL = function(){
 	// 	database : 'thas'
 
 	// });
+	console.log('criou conexao');
 		return mysql.createConnection({
 		host : 'afterthat.com.br',
 		user : 'awsbanco1',

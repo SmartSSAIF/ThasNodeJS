@@ -1,17 +1,13 @@
 var cn = require('./../../config/dbConnection')();
-var db = require('./GenericDAO');
+var ws = require('./webSocket');
 class SingletonCarros {
 
   constructor() {
     console.log('construtor carro')
-    // console.log(typeof cn)
-    // console.log(cn.name)
-    // var d = db(cn);
-    // console.log(typeof d);
-    // console.log(d.name)
-    // d.read('carro', function(err,res){
-    //   console.log(res)
-    // })
+    console.log(typeof cn)
+    console.log(cn.name)
+   
+   
       this.logs = [];
   }
 
@@ -27,16 +23,19 @@ class SingletonCarros {
   getCarros(){
     console.log('get carros') ;
      
+    var connection = cn();
 
-  //   var dao = new db(cn)
-  //   try{
-  //   console.log(dao.name)
-  //   dao.prototype.read('carro', function(err, res) {
-      
-  //   })
-  // }catch(e){
-  //   console.log(e)
-  // }
+ 
+    connection.query('select * from carros', function(e,r){
+      if(e){
+        console.log(e)
+        return
+      }
+      // for(var i =0;i<r.length;i++){
+      //   console.log(r[i])
+      // }
+      var w = ws(5005)
+    })
     }
     
 

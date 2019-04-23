@@ -9,9 +9,9 @@ module.exports = function (app) {
     app.post('/pedido',auth.verify, function (req, res) {
         app.app.controller.pedido.post(app, req, res);
     });
-    app.post('/testePost',auth.verify, function (req, res) {
-        app.app.controller.pedido.testePost(app, req, res);
-    });
+    // app.post('/pedido',auth.verify, function (req, res) {
+    //     app.app.controller.pedido.post(app, req, res);
+    // });
 
     app.delete('/pedido',auth.verify,function (req, res) {
         app.app.controller.pedido.delete(app, req, res);
