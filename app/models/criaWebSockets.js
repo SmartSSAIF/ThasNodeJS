@@ -10,11 +10,11 @@ function criaWebSockets(){
   var genericDAO = new generic(connection)
   console.log(typeof genericDAO)
   
-  genericDAO.execute('carro', function(error, result){
-        if(error){
-            console.log(error)
-            return
-        }
-        console.log(result)
-    });
+//   genericDAO.execute('carro', function(error, result){
+//         if(error){
+//             console.log(error)
+//             return
+//         }
+//         console.log(result)
+//     });
 }
