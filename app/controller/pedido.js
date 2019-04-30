@@ -6,7 +6,7 @@ module.exports.get = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
 
 
-    genericDAO.execute("select * from pedido, pedidoproduto where pedido.id = pedidoproduto.idPedido    ", function (error, result) {
+    genericDAO.execute("select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido  ", function (error, result) {
         if (error) {
             console.log(error);
             return res.status(500).send('Servidor indisponível no momento');
@@ -22,9 +22,20 @@ module.exports.get = function (app, req, res) {
                 });
             }
                 for (var i = 0; i < result.length; i++) {
-    
+                    console.log("Id ",result[i].idPedido)
                     result[i].origem = dict[result[i].origem].value;
                     result[i].destino = dict[result[i].destino].value
+                    sql = "select distinct pedidoproduto.idProduto,produtos.nome from produtos, pedido, pedidoproduto where pedidoproduto.idProduto = produtos.id and pedidoproduto.idPedido = "+result[i].idPedido; 
+                    console.log(sql)
+                    genericDAO.execute(sql, function(e,r){
+                        if(e)
+                        {
+                            console.log(e)
+                            return 
+                        }
+  //Junta os valores
+                    });
+
                 }
                 return res.status(200).send(result);
             })
@@ -64,7 +75,14 @@ module.exports.post = function (app, req, res) {
     genericDAO.create(data, "pedido", function (error, resultado) {
         if (!error) {
             var query = "SELECT * FROM pedido ORDER BY id DESC LIMIT 1";
-            //COlocar por exemplo 1- esperando 2 - executando 3- finalizado 4- cancelado
+            /*
+                    1 - Esperando FILA
+                    2 - Buscando
+                    3 - Aguardando confirmação
+                    4 - Levando 
+                    5 - Finalizado
+                    6 - Cancelado
+            */
             genericDAO.execute(query, null, (err, result) => {
                 console.log("pedidresulto produto")
                 if (err) {
