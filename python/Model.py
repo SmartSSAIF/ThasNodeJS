@@ -1,7 +1,7 @@
 import pymysql
 import requests
 from threading import Thread
-
+import json
 class DB:
     banco = None
 
@@ -29,11 +29,10 @@ class LugarDAO():
     cur = self.db.cursor()
     cur.execute('select * from lugares where id =%s',[id])
     lugar =  curToObj(cur)
-    print(lugar)
     if len(lugar)>0:
       lugar = lugar[0]
-    print("Lugar id ", lugar['id'])
-    return Lugar(lugar['nome'],lugar['rfid'],lugar['id'])
+    if lugar:
+      return Lugar(lugar['nome'],lugar['rfid'],lugar['id'])
 class ArestaDAO():
   def __init__(self):
     self.db = DB().db
@@ -59,6 +58,7 @@ class PedidoDAO():
     cur.execute('select * from pedido where statusPedido = 1 order by prioridade desc')
     return curToObj(cur)
   def find(self, id):
+
     return PedidoProdutoDAO().findProdutosAndPedido(id)
     # cur = self.db.cursor()
     # cur.execute('select * from pedido where id=%s',[id])
@@ -71,7 +71,6 @@ class PedidoDAO():
     pedidosBD = self.findPedidosNaFila()
     pedidos = []
     for i in pedidosBD:
-      print(i)
       produtos = PedidoProdutoDAO().findProdutosAndPedido(i[0])
       pedido = Pedido2(i[0],i[1],i[2],i[3],produtos[-1][3],produtos[-1][4])
       pedidos.append()
@@ -80,38 +79,35 @@ class PedidoDAO():
     try:
 
       cur = self.db.cursor()
-      print('tentando')
       cur.execute('UPDATE pedido SET statusPedido=%s WHERE id=%s',[status, id])
       self.db.commit()
       cur.fetchone()
     except Exception as e:
       print(e)
+  
 class PedidoProdutoDAO():
   def __init__(self):
     self.db = DB().db
   def findProdutosAndPedido(self,idPedido):
     cur = self.db.cursor()
     cur.execute('select * from pedido where id=%s',[idPedido])## Duas vezes para pegar origem e destino
-    pedidoDB = cur.fetchone()
-    print(pedidoDB)
+    pedidoDB = curToObj(cur)[0]
     cur.execute('select * from pedidoproduto where idPedido = %s',[idPedido])
-    produtosDB = cur.fetchall()
-    print("tam ", len(produtosDB))
-    if len(produtosDB)>0:
-      pedido = Pedido2(pedidoDB[0],pedidoDB[1],pedidoDB[2],pedidoDB[3],produtosDB[-1][3],produtosDB[-1][4])
-    else:
-      pedido = Pedido2(pedidoDB[0],pedidoDB[1],pedidoDB[2],pedidoDB[3],-1,-1)
+    produtosDB = curToObj(cur)
+      # id, data, statusPedido, prioridade, origem, destino
+    pedido = Pedido2(pedidoDB['id'],pedidoDB['data'],pedidoDB['statusPedido'],pedidoDB['prioridade'],produtosDB[0]['origem'],produtosDB[0]['destino'], pedidoDB['observacoes'])
     for i in produtosDB:
-      cur.execute('select * from produtos where id =%s',i[1])
-      produto = cur.fetchone()
-      pedido.produtos.append(Produto(produto[0],produto[1],produto[2],produto[3]))
+      cur.execute('select * from produtos where id =%s',[i['idProduto']])
+      produto = curToObj(cur)[0]
+      #  id, nome, lugar, nomeLugar
+      pedido.produtos.append(Produto(produto['id'],produto['nome'],produto['lugar'],produto['nomeLugar']))
+    
     return pedido
 def curToObj( cur):
     row_headers = [x[0] for x in cur.description]
     rv = cur.fetchall()
     json_data = []
     for result in rv:
-      # print(result)
       json_data.append(dict(zip(row_headers, result)))
     return (json_data)
 class ProdutoDAO():
@@ -121,9 +117,9 @@ class ProdutoDAO():
   def findProduto(self, id):
     cur = self.db.cursor()
     cur.execute('select * from produtos where id = %s',[id])
-    produto =  cur.fetchone()
-    print(produto)
-    return Produto(produto[0], produto[1], produto[2], produto[3])
+    produto =  curToObj(cur)
+    #  id, nome, lugar, nomeLugar
+    return Produto(produto['id'], produto['nome'], produto['lugar'], produto['nomeLugar'])
 class CarroDAO():
   def __init__(self):
     self.db = DB().db
@@ -131,39 +127,43 @@ class CarroDAO():
   def findFree(self):
     cur = self.db.cursor()
     cur.execute('select * from carros where estado = %s',[1])
-    # carro =  cur.fetchall()
     carro= curToObj(cur)
-    # print(c)
-    print('carros ', len(carro))
     carros = []
     for i in carro:
-      print(i)
       carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual']))
     return carros
   def updateStatus(self, id, estado):
     try:
-
       cur = self.db.cursor()
-      print('tentando')
       cur.execute('UPDATE carros SET estado=%s WHERE id=%s',[estado, id])
       self.db.commit()
       s = cur.fetchall()
-      print(s)
-      print('foi')
     except Exception as e:
       print(e)
 class Pedido2(object):
-  def __init__(self, id, data, statusPedido, prioridade, origem, destino):
+  def __init__(self, id, data, statusPedido, prioridade, origem, destino,observacoes):
     self.id = id
     self.data = data
     self.statusPedido = statusPedido
     self.prioridade = prioridade
     self.origem = origem
     self.destino = destino
+    self.observacoes = observacoes
     self.produtos = []
     self.instrucoes = None
   def setInstrucoes(self, instrucoes):
     self.instrucoes = instrucoes
+  def toString(self):
+    return 'Origem: '+str(self.origem)+'\nDestino: '+str(self.destino)+'\nId: '+str(self.id)
+  def toJson(self):
+    r = {
+        'id':self.id,
+        'prioridade':self.prioridade,
+        'origem':self.origem,
+        'destino':self.destino,
+        'observacoes': self.observacoes
+      }
+    return r
 
 # class Lugar(object):
 #   def __init__(self, id, nome):
@@ -281,21 +281,20 @@ class Pedido():
         self.itens = itens
         self.dados = dados
 class Comunicacao(Thread):
-  def __init__(self, carro, instrucoes):
+  def __init__(self, carro, instrucoes, pedido):
     Thread.__init__(self)
     self.carro = carro
     self.instrucoes = instrucoes
+    self.pedido = pedido
   def run(self):
     for i in self.instrucoes:
-      print(type(self.instrucoes))
-      print(i.noA.nome)
-      self.enviaInstrucoes(self.carro.ip, i.toJson())
+      self.enviaInstrucoes(self.carro.ip, i.toJson(), self.pedido.toJson())
 
-  def enviaInstrucoes(self, carro, instrucao):
-    print(type(carro))
-
-    a = {'carro':carro,'inst': instrucao}
-    print(a)
-    r = requests.post("http://localhost:3001/teste", data=instrucao)
+  def enviaInstrucoes(self, carro, instrucao,pedido):
+    print("Vai enviar")
+    print(type(pedido))
+    a = {'carro':carro,'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
+    print((a),'=========================')
+    r = requests.post("http://localhost:3001/teste", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')

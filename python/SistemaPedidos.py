@@ -134,28 +134,45 @@ while True:
   fila = PedidoDAO().findPedidosNaFila()
   filaPedido = []
   for i in fila:
+    print('I ', i)
     filaPedido.append(PedidoDAO().find(i['id']))
   
   # instrucaoAtual = filaPedido.pop(0)
   
   if len(filaPedido)>0:
-    print("Pedido")
+    print("Pedido ", len(filaPedido))
     pedido = filaPedido.pop(0)
-    print(type(pedido))
+    # print(pedido.toString(),'\t\tDisperdicado')
     carros = CarroDAO().findFree()
     if len(carros) > 0:
-
+      # pedido = filaPedido.pop(0)
       carro = carros[0] ##Logica para buscar o melhor carro disponivel
       # CarroDAO().updateStatus(carro.id,0)
-      ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
-      instrucoes = pickle.loads(ob)
-      # for instrucao in instrucoes:
-      #   print(type(instrucao))
-      #   print(json.dumps(instrucao))
+      try:
+        ob2 = c.pedido([LugarDAO().find(carro.localizacaoAtual).nome, LugarDAO().find(pedido.origem).nome])
+        instrucoes2 = pickle.loads(ob2)
+        print('\t\t\t\t\t',instrucoes2)
+        Comunicacao(carro, instrucoes2, pedido).start()
 
-      Comunicacao(carro, instrucoes).start()
-      PedidoDAO().updateStatus(pedido.id,0)
-      pedido.setInstrucoes(instrucoes)
+
+
+
+
+        ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
+        instrucoes = pickle.loads(ob)
+        Comunicacao(carro, instrucoes, pedido).start()
+        PedidoDAO().updateStatus(pedido.id,0)
+        pedido.setInstrucoes(instrucoes)
+        for instrucao in instrucoes:
+          
+          print(type(instrucao))
+      except Exception as e:
+        print('Não foi atendido \n',pedido.toString())
+        PedidoDAO().updateStatus(pedido.id,3)
+        print(e)
+
+
+      
   
   
   

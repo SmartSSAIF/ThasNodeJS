@@ -227,6 +227,7 @@ class Comunicacao(object):
         origem.setPai(None)
         destino =  grafo.nos[grafo.nos.index(para)]
         vetor = []
+        print('Origem e destino ', (origem.lugar.indice), '\tdestini\t', (destino.lugar.indice),'\t igual? ',origem.lugar.indice==destino.lugar.indice)
         j = 0
         while True:
             for i in origem.adjacentes:
@@ -235,7 +236,6 @@ class Comunicacao(object):
                     i.setPai(origem)
 
                     vetor.append(i)
-
             aux = vetor.pop()
 
             if(aux.indice == destino.indice):
@@ -265,14 +265,11 @@ class Comunicacao(object):
         return str(self.caminhoFinal(no.pai))+","+str(no.indice)
 
     def pedido(self,lugares):
-        # print(hashLugares)
-        # print("PEDIDO INVOCADO")
-        ##print(lugares[2],"\t Carro")
-        print('tam lugares ',len(lugares))
-        print("Novo pedido ",lugares)
-        split1 = (self.caminhoFinal(self.buscaCaminho(hashLugares[lugares[0]],hashLugares[lugares[1]],graph)))
-        # print("split")
-        # print(split1)
+        if lugares[0] != lugares[1]:
+            split1 = (self.caminhoFinal(self.buscaCaminho(hashLugares[lugares[0]],hashLugares[lugares[1]],graph)))
+        else:
+            split1 = str(hashLugares[lugares[0]].lugar.indice)+','+str(hashLugares[lugares[1]].lugar.indice)
+            return pickle.dumps([])
         split1 = split1.split(',')
         instrucoes = ""
         saida = []
@@ -289,11 +286,12 @@ class Comunicacao(object):
         #self.logica.enviaPedido("127.0.0.1",str(saida))
         #self.enviaPost()
         # print('tipo ', type(saidaTeste))
-        
+        print(saida2)
         return pickle.dumps(saida2)
         
     def enviaPost(self, instrucoes):
         #Caminho do carrinho
+        print('envia')
         r = requests.post("http://localhost:3000/testePost", data={'number': 12524, 'type': 'issue', 'action': 'show'})
         print(r.status_code, r.reason)
         print("post realizado")       
