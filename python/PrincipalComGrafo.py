@@ -292,6 +292,7 @@ class Comunicacao(object):
     def enviaPost(self, instrucoes):
         #Caminho do carrinho
         print('envia')
+        #r = requests.post("http://192.168.10.99:3000/testePost", data={'number': 12524, 'type': 'issue', 'action': 'show'})
         r = requests.post("http://localhost:3000/testePost", data={'number': 12524, 'type': 'issue', 'action': 'show'})
         print(r.status_code, r.reason)
         print("post realizado")       

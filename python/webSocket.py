@@ -101,7 +101,7 @@ class PyWSock(object):
     def start_server (self, port):
         s = socket.socket()
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(('', port))
+        s.bind(('0.0.0.0', port))
         s.listen(5)
         while(1):
             print ('Waiting for connection...')
@@ -114,6 +114,7 @@ class PyWSock(object):
 class HelloRPC(object):
     def hello(self, name):
         print('Geelo')
+
         return ("Hello", name)
 
 class RPC(threading.Thread):

@@ -131,12 +131,13 @@ c.connect("tcp://127.0.0.1:5005")
 ##Busca fila de pedidos e converte para objeto pedido
 
 while True:
+  print('Teste')
   fila = PedidoDAO().findPedidosNaFila()
   filaPedido = []
   for i in fila:
     print('I ', i)
     filaPedido.append(PedidoDAO().find(i['id']))
-  
+  print(len(filaPedido))
   # instrucaoAtual = filaPedido.pop(0)
   
   if len(filaPedido)>0:
@@ -151,8 +152,10 @@ while True:
       try:
         ob2 = c.pedido([LugarDAO().find(carro.localizacaoAtual).nome, LugarDAO().find(pedido.origem).nome])
         instrucoes2 = pickle.loads(ob2)
-        print('\t\t\t\t\t',instrucoes2)
-        Comunicacao(carro, instrucoes2, pedido).start()
+        for j in instrucoes2:
+              print("2\t->",j.toJson())
+              print("Carrou \t", type(carro.localizacaoAtual))
+              Comunicacao(carro, instrucoes2, pedido).start()
 
 
 
@@ -160,12 +163,13 @@ while True:
 
         ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
         instrucoes = pickle.loads(ob)
-        Comunicacao(carro, instrucoes, pedido).start()
+        print('\nInstrucoes ', instrucoes)
+        for i in instrucoes:
+              print('Aresta ->',i.toJson())
+              Comunicacao(carro, instrucoes, pedido).start()
         PedidoDAO().updateStatus(pedido.id,0)
         pedido.setInstrucoes(instrucoes)
-        for instrucao in instrucoes:
-          
-          print(type(instrucao))
+        
       except Exception as e:
         print('Não foi atendido \n',pedido.toString())
         PedidoDAO().updateStatus(pedido.id,3)

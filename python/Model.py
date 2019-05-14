@@ -128,9 +128,12 @@ class CarroDAO():
     cur = self.db.cursor()
     cur.execute('select * from carros where estado = %s',[1])
     carro= curToObj(cur)
+    
     carros = []
     for i in carro:
-      carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual']))
+      cur.execute('select rfid from lugares where id=%s',[i['localizacaoAtual']])
+      rfid = curToObj(cur)[0]
+      carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual'],rfid['rfid']))
     return carros
   def updateStatus(self, id, estado):
     try:
@@ -140,6 +143,15 @@ class CarroDAO():
       s = cur.fetchall()
     except Exception as e:
       print(e)
+  # def updateLugar(self, lugar,id):
+  #       try:
+  #         cur = self.db.cursor()
+  #         cur.execute('select id from lugares where rfid=%s',[lugar])
+  #         lugar = curToObj(cur)[0]['id']
+  #         print(lugar, "foi")
+  #         cur.execute('UPDATE `thas`.`carros` SET `localizacaoAtual`='1' WHERE id=%s',[lugar,id])
+  #       except Exception as e:
+  #         print(e)
 class Pedido2(object):
   def __init__(self, id, data, statusPedido, prioridade, origem, destino,observacoes):
     self.id = id
@@ -170,17 +182,30 @@ class Pedido2(object):
 #     self.id=id
 #     self.nome=nome
 class Carro(object):
-  def __init__(self, id, ip, estado, localizacaoAtual) :
+  def __init__(self, id, ip, estado, localizacaoAtual,rfid) :
     self.id = id
     self.ip = ip
     self.estado = estado
     self.localizacaoAtual = localizacaoAtual
+    self.rfid = rfid
+
+  def toJson(self):
+    r = {
+        'id':self.id,
+        'ip':self.ip,
+        'estado':self.estado,
+        'localizacao':self.localizacaoAtual,
+        'rfid': self.rfid
+      }
+    return r
 class Produto(object):
   def __init__(self, id, nome, lugar, nomeLugar):
     self.id = id
     self.nome = nome
     self.lugar = lugar
     self.nomeLugar = nomeLugar
+  
+
 
 
 class Instrucao():
@@ -288,13 +313,14 @@ class Comunicacao(Thread):
     self.pedido = pedido
   def run(self):
     for i in self.instrucoes:
-      self.enviaInstrucoes(self.carro.ip, i.toJson(), self.pedido.toJson())
+      self.enviaInstrucoes(self.carro.toJson(), i.toJson(), self.pedido.toJson())
 
   def enviaInstrucoes(self, carro, instrucao,pedido):
     print("Vai enviar")
     print(type(pedido))
-    a = {'carro':carro,'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
+    a = {'carro':(json.dumps(carro)),'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
     print((a),'=========================')
+    # r = requests.post("http://192.168.10.50:3000/instrucao", data=json.loads(json.dumps(a)))
     r = requests.post("http://localhost:3001/teste", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')
