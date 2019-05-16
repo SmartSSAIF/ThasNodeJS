@@ -1,5 +1,6 @@
 var app = require('./config/server.js');
 
+global.posicoes = {'Inicial': -21.837005}
 
 
 

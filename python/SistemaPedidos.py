@@ -152,23 +152,18 @@ while True:
       try:
         ob2 = c.pedido([LugarDAO().find(carro.localizacaoAtual).nome, LugarDAO().find(pedido.origem).nome])
         instrucoes2 = pickle.loads(ob2)
-        for j in instrucoes2:
-              print("2\t->",j.toJson())
-              print("Carrou \t", type(carro.localizacaoAtual))
+        if len(instrucoes2) >0:
               Comunicacao(carro, instrucoes2, pedido).start()
+              ##Espera confirmacao, se entrar neste processo cria uma thread...
 
 
 
-
-
-        ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
-        instrucoes = pickle.loads(ob)
-        print('\nInstrucoes ', instrucoes)
-        for i in instrucoes:
-              print('Aresta ->',i.toJson())
-              Comunicacao(carro, instrucoes, pedido).start()
+        # ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
+        # instrucoes = pickle.loads(ob)
+        # if len(instrucoes)>0:
+        #       Comunicacao(carro, instrucoes, pedido).start()
         PedidoDAO().updateStatus(pedido.id,0)
-        pedido.setInstrucoes(instrucoes)
+        # pedido.setInstrucoes(instrucoes)
         
       except Exception as e:
         print('Não foi atendido \n',pedido.toString())

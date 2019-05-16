@@ -131,15 +131,16 @@ for lugar in lugares:
     hashRfid[lugar.rfid] = n
 
 for lugar in hashLugares:
-    print("\t",hashLugares[lugar].lugar.nome)
+    print("\t Vai chamar dao")
     adjacentes = Model.ArestaDAO().find(hashLugares[lugar].lugar.indice)
     for adjacente in adjacentes:
+        print(adjacente['distancia'])
         if adjacente['lugar1'] != hashLugares[lugar].lugar.indice:
             print("Lugar vizinho ",Model.LugarDAO().find(adjacente['lugar1']).nome)
-            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar1']).nome])
+            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar1']).nome],adjacente['distancia'])
         else:
             print("Lugar vizinho ",Model.LugarDAO().find(adjacente['lugar2']).nome)
-            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar2']).nome])
+            hashLugares[lugar].addAdjacente(hashLugares[Model.LugarDAO().find(adjacente['lugar2']).nome],adjacente['distancia'])
 
 
 
@@ -296,7 +297,7 @@ class Comunicacao(object):
         r = requests.post("http://localhost:3000/testePost", data={'number': 12524, 'type': 'issue', 'action': 'show'})
         print(r.status_code, r.reason)
         print("post realizado")       
-    def addAresta(self,noa,nob,angulo=0,peso=1):
+    def addAresta(self,noa,nob,distancia, angulo=0,peso=1):
         nome = str(noa.indice)+','+str(nob.indice)
         split = nome.split(",")
         nome2 = split[1] + "," + split[0]
@@ -340,7 +341,7 @@ for lugar in hashLugares:
     for adj in hashLugares[lugar].adjacentes:
         if hashLugares[lugar].lugar.nome != adj.lugar.nome:
             print('Adj ',hashLugares[lugar].lugar.nome,'\t',adj.lugar.nome)
-            com.addAresta(hashLugares[lugar].lugar,adj.lugar)
+            com.addAresta(hashLugares[lugar].lugar,adj.lugar )
 
 # com.addAresta(hashLugares[("peteca"+str(16))],hashLugares[("peteca"+str(17))])
 # com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(16))])

@@ -25,6 +25,10 @@ class LugarDAO():
     for i in lugaresBD:
       lugares.append(Lugar(i['nome'],i['rfid'],i['id']))
     return lugares
+  def readAll(self):
+        cur = self.db.cursor()
+        cur.execute('select * from lugares where id > 0')
+        return curToObj(cur)
   def find(self, id):
     cur = self.db.cursor()
     cur.execute('select * from lugares where id =%s',[id])
@@ -41,10 +45,17 @@ class ArestaDAO():
     cur.execute('select * from aresta')
     arestasBD = curToObj(cur)
     arestas = []
+    print("DAO")
     for aresta in arestasBD:
-      arestas.append(Aresta(Node(LugarDAO().find(aresta['lugar1'])),Node(LugarDAO().find(aresta['lugar2'])), aresta['angulo'],aresta['peso']))
+      print("Distancia da aresta", aresta['distancia'])
+      arestas.append(Aresta(Node(LugarDAO().find(aresta['lugar1'])),Node(LugarDAO().find(aresta['lugar2'])), aresta['distancia'],aresta['angulo'],aresta['peso']))
 
     return arestas
+  def readAll(self):
+        cur = self.db.cursor()
+        cur.execute('select * from aresta')
+        return curToObj(cur)
+    
   def find(self, lugar):
     cur = self.db.cursor()
     cur.execute('select * from aresta where lugar1 = %s or lugar2 = %s',[lugar,lugar])
@@ -239,13 +250,15 @@ class Node(object):
         self.adjacentes = []
         self.pai = None
         self.rfid = lugar.rfid
+  
 
     def setPai(self,pai):
         self.pai = pai
 
-    def addAdjacente(self, no):
-
+    def addAdjacente(self, no,distancia):
+        print(no.indice, '\t indice')
         self.adjacentes.append(no)
+
         no.adj(self)
 
     def adj(self, no):
@@ -263,17 +276,21 @@ class Node(object):
         self.pai = no
 
 class Aresta(object):
-    def __init__(self, noA, noB, angulo=0, peso=1):
+    def __init__(self, noA, noB,distancia, angulo=0, peso=1):
         self.noA = noA
         self.noB = noB
         self.peso = peso
         self.angulo = angulo # 0 reto 1 costas ### 2 direito 3 esquerdo
+        self.distancia = distancia
     def toJson(self):
       r = {
         'origem':self.noA.nome,
+        'origemRfid': self.noA.rfid.codigo,
         'destino':self.noB.nome,
+        'destinoRfid': self.noB.rfid.codigo,
         'peso':self.peso,
-        'angulo':self.angulo
+        'angulo':self.angulo,
+        'distancia': self.distancia
       }
       return r
     def toString(self):
@@ -313,14 +330,17 @@ class Comunicacao(Thread):
     self.pedido = pedido
   def run(self):
     for i in self.instrucoes:
+      print("Carro tipo ", i.toJson())
       self.enviaInstrucoes(self.carro.toJson(), i.toJson(), self.pedido.toJson())
 
   def enviaInstrucoes(self, carro, instrucao,pedido):
     print("Vai enviar")
     print(type(pedido))
     a = {'carro':(json.dumps(carro)),'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
+    print('Teste ', carro)
     print((a),'=========================')
-    # r = requests.post("http://192.168.10.50:3000/instrucao", data=json.loads(json.dumps(a)))
-    r = requests.post("http://localhost:3001/teste", data=json.loads(json.dumps(a)))
+    print("IP DESSE FILHO DA PUTA ",carro['ip'] )
+    # r = requests.post("http://192.168.10.99:3001/teste", data=json.loads(json.dumps(a)))
+    r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')

@@ -2,9 +2,9 @@
 
 var singleton = require('./app/models/singleton').getInstance()
 var zerorpc = require("zerorpc");
-var flag = 0
+var flag = 0;
 var WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({ port: 5011 })
+    wss = new WebSocketServer({ port: 5010 })
 
 
 wss.on('connection', function (ws) {
@@ -38,7 +38,8 @@ const sendAll = function (message) {
     for (var i = 0; i < singleton.getUsuarios().length; i++) {
         console.log(singleton.getUsuarios()[i].readyState,'\t Estado')
         if (singleton.getUsuarios()[i].readyState == 1) {
-            singleton.getUsuarios()[i].send("Message: " + message);
+            console.log('Enviando:' + message)
+            singleton.getUsuarios()[i].send(message);
         }
     }
 }
