@@ -79,6 +79,7 @@ module.exports.post = function (app, req, res) {
                     1 - Esperando FILA
                     2 - Buscando
                     3 - Aguardando confirmação
+                    7 - Confirmado
                     4 - Levando 
                     5 - Finalizado
                     6 - Cancelado

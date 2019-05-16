@@ -106,6 +106,7 @@ class PedidoProdutoDAO():
     cur.execute('select * from pedidoproduto where idPedido = %s',[idPedido])
     produtosDB = curToObj(cur)
       # id, data, statusPedido, prioridade, origem, destino
+    # print("Produtos ", produtosDB)
     pedido = Pedido2(pedidoDB['id'],pedidoDB['data'],pedidoDB['statusPedido'],pedidoDB['prioridade'],produtosDB[0]['origem'],produtosDB[0]['destino'], pedidoDB['observacoes'])
     for i in produtosDB:
       cur.execute('select * from produtos where id =%s',[i['idProduto']])
@@ -329,18 +330,17 @@ class Comunicacao(Thread):
     self.instrucoes = instrucoes
     self.pedido = pedido
   def run(self):
-    for i in self.instrucoes:
-      print("Carro tipo ", i.toJson())
-      self.enviaInstrucoes(self.carro.toJson(), i.toJson(), self.pedido.toJson())
+    # for i in self.instrucoes:
+    #   print("Carro tipo ", type(i))
+
+    self.enviaInstrucoes(self.carro.toJson(), self.instrucoes, self.pedido.toJson())
 
   def enviaInstrucoes(self, carro, instrucao,pedido):
-    print("Vai enviar")
-    print(type(pedido))
     a = {'carro':(json.dumps(carro)),'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
     print('Teste ', carro)
     print((a),'=========================')
     print("IP DESSE FILHO DA PUTA ",carro['ip'] )
-    # r = requests.post("http://192.168.10.99:3001/teste", data=json.loads(json.dumps(a)))
-    r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
+    r = requests.post("http://192.168.10.99:3001/teste", data=(a))
+    # r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')

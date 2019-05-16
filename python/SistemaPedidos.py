@@ -150,18 +150,23 @@ while True:
       carro = carros[0] ##Logica para buscar o melhor carro disponivel
       # CarroDAO().updateStatus(carro.id,0)
       try:
-        ob2 = c.pedido([LugarDAO().find(carro.localizacaoAtual).nome, LugarDAO().find(pedido.origem).nome])
-        instrucoes2 = pickle.loads(ob2)
-        if len(instrucoes2) >0:
-              Comunicacao(carro, instrucoes2, pedido).start()
-              ##Espera confirmacao, se entrar neste processo cria uma thread...
+        # ob2 = c.pedido([carro.localizacaoAtual, pedido.origem])
+        # instrucoes2 = json.loads(ob2)
+        # print('Instrucoes\n',instrucoes2)
+        # if len(instrucoes2) >0:
+        #       Comunicacao(carro, instrucoes2, pedido).start()
+        #       ##Espera confirmacao, se entrar neste processo cria uma thread...
 
 
 
-        # ob = c.pedido([LugarDAO().find(pedido.origem).nome,LugarDAO().find(pedido.destino).nome])
-        # instrucoes = pickle.loads(ob)
-        # if len(instrucoes)>0:
-        #       Comunicacao(carro, instrucoes, pedido).start()
+        ob = c.buscaCaminhoPorId([pedido.origem,pedido.destino])
+        print(ob)
+       
+        instrucoes = json.loads(ob.replace("\'","\""))
+        print('0 ',instrucoes[0]['lugar'])
+
+        if len(instrucoes)>0:
+              Comunicacao(carro, instrucoes, pedido).start()
         PedidoDAO().updateStatus(pedido.id,0)
         # pedido.setInstrucoes(instrucoes)
         
