@@ -1,7 +1,9 @@
 var app = require('./config/server.js');
+var zerorpc = require("zerorpc");
 
 global.posicoes = {'Inicial': -21.837005}
-
+global.clientezerorpc = new zerorpc.Client();
+global.clientezerorpc.connect("tcp://0.0.0.0:5858");
 
 
 var https = require('https');

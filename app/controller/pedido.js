@@ -6,7 +6,7 @@ module.exports.get = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
 
 
-    genericDAO.execute("select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido  ", function (error, result) {
+    genericDAO.execute("select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido and statusPedido  = 3  ", function (error, result) {
         if (error) {
             console.log(error);
             return res.status(500).send('Servidor indisponível no momento');
@@ -44,6 +44,22 @@ module.exports.get = function (app, req, res) {
 
     });
 
+
+
+}
+module.exports.getById = function (app, req, res) {
+
+    var connection = app.config.dbConnection();
+    var genericDAO = new app.app.models.GenericDAO(connection);
+    sql = "select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido and pedido.id = "+String(req.query.id)
+    genericDAO.execute(sql, function(error, result){
+        if(error){
+            console.log(error)
+            // return res.status(400).send({'error': 'Erro ao buscar pedido por id'})
+        }
+        console.log('Result ', result)
+        return res.status(200).send(result)
+    })
 
 
 }

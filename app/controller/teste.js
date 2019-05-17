@@ -43,6 +43,7 @@ module.exports.post = function (app, req, res) {
     // }
     // })
     // connection.end()
+    var lista = [];
     var instrucoes = JSON.parse(req.body.inst)
     for(var instrucao of instrucoes){
         if(JSON.stringify(instrucao).includes("node")){
@@ -53,11 +54,14 @@ module.exports.post = function (app, req, res) {
                 peso: instrucao.peso,
                 distancia: instrucao.distancia
             }
-            console.log('e ',enviar)        }
+            lista.push(enviar)
+            console.log('e ',enviar)    
+            }
         else {
           console.log('Vem ',instrucao)
   
         }
     }
+    // console.log("Lista ",JSON.stringify(lista))
     return res.status(200).send(req.body);
 }

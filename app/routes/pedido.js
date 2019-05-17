@@ -4,6 +4,9 @@ module.exports = function (app) {
     app.get('/pedido',auth.verify, function (req, res) {
         app.app.controller.pedido.get(app, req, res);
     });
+    app.get('/pedido/id',/*auth.verify,*/ function (req, res) {
+        app.app.controller.pedido.getById(app, req, res);
+    });
 
 
     app.post('/pedido',auth.verify, function (req, res) {

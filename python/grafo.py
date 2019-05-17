@@ -95,7 +95,7 @@ class Grafo(object):
             
         
         
-        return str(respostaFinal)
+        return respostaFinal
     def buscaCaminho(self, de, para):
         print('de ', de.indice)
         print('para ', type(para))

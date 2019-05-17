@@ -11,7 +11,7 @@ class DB:
         return cls.banco
 
     def __init__(self):
-        self.db = pymysql.connect(host="afterthat.com.br", user="awsbanco1",
+        self.db = pymysql.connect(host="54.207.71.24", user="awsbanco1",
                                   passwd="petequinha", db="thas")
 class LugarDAO():
   def __init__(self):
@@ -24,10 +24,12 @@ class LugarDAO():
     lugares = []
     for i in lugaresBD:
       lugares.append(Lugar(i['nome'],i['rfid'],i['id']))
+    self.db.close()
     return lugares
   def readAll(self):
         cur = self.db.cursor()
         cur.execute('select * from lugares where id > 0')
+        self.db.close()
         return curToObj(cur)
   def find(self, id):
     cur = self.db.cursor()
@@ -36,6 +38,7 @@ class LugarDAO():
     if len(lugar)>0:
       lugar = lugar[0]
     if lugar:
+      self.db.close()
       return Lugar(lugar['nome'],lugar['rfid'],lugar['id'])
 class ArestaDAO():
   def __init__(self):
@@ -49,16 +52,18 @@ class ArestaDAO():
     for aresta in arestasBD:
       print("Distancia da aresta", aresta['distancia'])
       arestas.append(Aresta(Node(LugarDAO().find(aresta['lugar1'])),Node(LugarDAO().find(aresta['lugar2'])), aresta['distancia'],aresta['angulo'],aresta['peso']))
-
+    self.db.close()
     return arestas
   def readAll(self):
         cur = self.db.cursor()
         cur.execute('select * from aresta')
+        self.db.close()
         return curToObj(cur)
     
   def find(self, lugar):
     cur = self.db.cursor()
     cur.execute('select * from aresta where lugar1 = %s or lugar2 = %s',[lugar,lugar])
+    self.db.close()
     return curToObj(cur)
   
 class PedidoDAO():
@@ -67,9 +72,10 @@ class PedidoDAO():
   def findPedidosNaFila(self):
     cur = self.db.cursor()
     cur.execute('select * from pedido where statusPedido = 1 order by prioridade desc')
+    self.db.close()
     return curToObj(cur)
   def find(self, id):
-
+    
     return PedidoProdutoDAO().findProdutosAndPedido(id)
     # cur = self.db.cursor()
     # cur.execute('select * from pedido where id=%s',[id])
@@ -85,6 +91,7 @@ class PedidoDAO():
       produtos = PedidoProdutoDAO().findProdutosAndPedido(i[0])
       pedido = Pedido2(i[0],i[1],i[2],i[3],produtos[-1][3],produtos[-1][4])
       pedidos.append()
+    self.db.close()
     return pedidos
   def updateStatus(self, id, status):
     try:
@@ -93,6 +100,7 @@ class PedidoDAO():
       cur.execute('UPDATE pedido SET statusPedido=%s WHERE id=%s',[status, id])
       self.db.commit()
       cur.fetchone()
+      self.db.close()
     except Exception as e:
       print(e)
   
@@ -113,7 +121,7 @@ class PedidoProdutoDAO():
       produto = curToObj(cur)[0]
       #  id, nome, lugar, nomeLugar
       pedido.produtos.append(Produto(produto['id'],produto['nome'],produto['lugar'],produto['nomeLugar']))
-    
+    self.db.close()
     return pedido
 def curToObj( cur):
     row_headers = [x[0] for x in cur.description]
@@ -131,6 +139,7 @@ class ProdutoDAO():
     cur.execute('select * from produtos where id = %s',[id])
     produto =  curToObj(cur)
     #  id, nome, lugar, nomeLugar
+    self.db.close()
     return Produto(produto['id'], produto['nome'], produto['lugar'], produto['nomeLugar'])
 class CarroDAO():
   def __init__(self):
@@ -146,6 +155,7 @@ class CarroDAO():
       cur.execute('select rfid from lugares where id=%s',[i['localizacaoAtual']])
       rfid = curToObj(cur)[0]
       carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual'],rfid['rfid']))
+    self.db.close()
     return carros
   def updateStatus(self, id, estado):
     try:
@@ -153,6 +163,7 @@ class CarroDAO():
       cur.execute('UPDATE carros SET estado=%s WHERE id=%s',[estado, id])
       self.db.commit()
       s = cur.fetchall()
+      self.db.close()
     except Exception as e:
       print(e)
   # def updateLugar(self, lugar,id):
@@ -325,6 +336,7 @@ class Pedido():
         self.dados = dados
 class Comunicacao(Thread):
   def __init__(self, carro, instrucoes, pedido):
+      
     Thread.__init__(self)
     self.carro = carro
     self.instrucoes = instrucoes
@@ -340,7 +352,7 @@ class Comunicacao(Thread):
     print('Teste ', carro)
     print((a),'=========================')
     print("IP DESSE FILHO DA PUTA ",carro['ip'] )
-    r = requests.post("http://192.168.10.99:3001/teste", data=(a))
-    # r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
+    # r = requests.post("http://192.168.10.99:3001/teste", data=(a))
+    r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')

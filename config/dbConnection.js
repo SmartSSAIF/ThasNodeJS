@@ -3,7 +3,7 @@ var connMySQL = function(){
 
 	console.log('criou conexao');
 		return mysql.createConnection({
-		host : 'afterthat.com.br',
+		host : '54.207.71.24',
 		user : 'awsbanco1',
 		password : 'petequinha',
 		database : 'thas'

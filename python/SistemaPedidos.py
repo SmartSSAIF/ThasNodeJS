@@ -3,18 +3,19 @@ import datetime
 import zerorpc
 import pickle
 from Model import *
+import time
 import json
-class DB:
-    banco = None
+# class DB:
+#     banco = None
 
-    def __new__(cls, *args, **kwargs):
-        if not cls.banco:
-            cls.banco = super(DB, cls).__new__(cls, *args, **kwargs)
-        return cls.banco
+#     def __new__(cls, *args, **kwargs):
+#         if not cls.banco:
+#             cls.banco = super(DB, cls).__new__(cls, *args, **kwargs)
+#         return cls.banco
 
-    def __init__(self):
-        self.db = pymysql.connect(host="localhost", user="local",
-                                  passwd="p3tecH4mbul4nt3#%&(#*", db="thas")
+#     def __init__(self):
+#         self.db = pymysql.connect(host="localhost", user="local",
+#                                   passwd="p3tecH4mbul4nt3#%&(#*", db="thas")
 
 
 # class PedidoDAO():
@@ -131,17 +132,14 @@ c.connect("tcp://127.0.0.1:5005")
 ##Busca fila de pedidos e converte para objeto pedido
 
 while True:
-  print('Teste')
+  time.sleep(5)
   fila = PedidoDAO().findPedidosNaFila()
   filaPedido = []
   for i in fila:
-    print('I ', i)
     filaPedido.append(PedidoDAO().find(i['id']))
-  print(len(filaPedido))
   # instrucaoAtual = filaPedido.pop(0)
   
   if len(filaPedido)>0:
-    print("Pedido ", len(filaPedido))
     pedido = filaPedido.pop(0)
     # print(pedido.toString(),'\t\tDisperdicado')
     carros = CarroDAO().findFree()
@@ -149,21 +147,37 @@ while True:
       # pedido = filaPedido.pop(0)
       carro = carros[0] ##Logica para buscar o melhor carro disponivel
       # CarroDAO().updateStatus(carro.id,0)
+
+
+
       try:
-        # ob2 = c.pedido([carro.localizacaoAtual, pedido.origem])
-        # instrucoes2 = json.loads(ob2)
+
+        instrucoesPedido = c.buscaCaminhoPorId([carro.localizacaoAtual, pedido.origem])
+        print( 'Tamanho pedido ', len(instrucoesPedido))
+        # print(instrucoesPedido)
+        # for  instrucao in instrucoesPedido:
+        #       print('Instrucao ', instrucao)
         # print('Instrucoes\n',instrucoes2)
-        # if len(instrucoes2) >0:
-        #       Comunicacao(carro, instrucoes2, pedido).start()
-        #       ##Espera confirmacao, se entrar neste processo cria uma thread...
+        # print(pedido)
+        if len(instrucoesPedido) >0:
+              Comunicacao(carro, instrucoesPedido, pedido).start()
+              ##Espera confirmacao, se entrar neste processo cria uma thread...
+
+        print("\n\n\n\nINVERTEU\n\n\n")
+        #
+        #Espera confirmacao
+        #
 
 
-
-        ob = c.buscaCaminhoPorId([pedido.origem,pedido.destino])
-        print(ob)
+        print(" Origem ", pedido.origem)
+        print("Destino ",pedido.destino)
+        instrucoes = c.buscaCaminhoPorId([pedido.origem,pedido.destino])
+        # for  instrucao in ob:
+        #       print('Instrucao ', instrucao)
+        # print(ob)
        
-        instrucoes = json.loads(ob.replace("\'","\""))
-        print('0 ',instrucoes[0]['lugar'])
+        # instrucoes = json.loads(ob.replace("\'","\""))
+        # print('0 ',instrucoes[0]['lugar'])
 
         if len(instrucoes)>0:
               Comunicacao(carro, instrucoes, pedido).start()
