@@ -132,7 +132,7 @@ c.connect("tcp://127.0.0.1:5005")
 ##Busca fila de pedidos e converte para objeto pedido
 
 while True:
-  time.sleep(5)
+  time.sleep(1)
   fila = PedidoDAO().findPedidosNaFila()
   filaPedido = []
   for i in fila:
@@ -147,6 +147,7 @@ while True:
       # pedido = filaPedido.pop(0)
       carro = carros[0] ##Logica para buscar o melhor carro disponivel
       # CarroDAO().updateStatus(carro.id,0)
+      print("Vai realizar pedido")
 
 
 

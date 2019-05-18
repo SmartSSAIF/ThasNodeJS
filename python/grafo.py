@@ -17,10 +17,12 @@ class Adjacente(object):
         self.node = node
         self.peso = peso
         self.distancia = distancia
+        self.isFinal = 0
     def toJson(self):
         return {'node': self.node.toJson(),
                         'peso': self.peso,
-                        'distancia': self.distancia}
+                        'distancia': self.distancia,
+                        'isFinal': self.isFinal}
 class No(object):
     
     def __init__(self, lugar):
@@ -30,12 +32,14 @@ class No(object):
         self.adjacentes = []
         self.pai = None
         self.rfid = lugar.rfid
+        self.isFinal = 0
   
     def toJson(self):
         return {
             'lugar': self.lugar.nome,
             'indice': self.indice,
-            'rfid': self.rfid.codigo
+            'rfid': self.rfid.codigo,
+            'isFinal': self.isFinal
         }
     def setPai(self,pai):
         self.pai = pai
@@ -61,7 +65,8 @@ class Grafo(object):
         for no in self.vertices:
             self.vertices[no].visitado = False
     def buscaCaminhoPorId(self,ids):
-        
+        if ids[0] == ids[1]:
+            return []
         print('Chegou ',ids[0],'\t ',ids[1])
         resposta = []
         no = self.buscaCaminho(self.vertices[ids[0]], self.vertices[ids[1]])
@@ -74,9 +79,6 @@ class Grafo(object):
         ultimo = nos[0]
         i = 1 
         while i < len(nos):
-            print('Tipo ',type(resposta[ultimo]))
-            print('Ultim ', ultimo)
-            print('Ultimo do vetor ', nos[i])
             for j in self.vertices[int(ultimo)].adjacentes:
                 if  j.node.indice == int(nos[i]):
                     resposta[nos[i]] = (j)
@@ -85,9 +87,15 @@ class Grafo(object):
 
        
             i+=1
-        print(len(resposta))
         respostaFinal  = []
+        ultimaInstrucao = resposta.keys()
+        print(ultimaInstrucao)
+        print('Type ', (list(ultimaInstrucao)[-1]))
         for i in resposta:
+            print('\t\t',type(resposta[i]))
+
+            if str(i) ==list(ultimaInstrucao)[-1]:
+                resposta[i].isFinal = 1
             respostaFinal.append(resposta[i].toJson())
         print(respostaFinal)
 
@@ -167,24 +175,30 @@ for aresta in arestas:
 
     
 g = Grafo(vertices)
-print(g.vertices.keys())
-print('Quem ',(g.vertices[1]))
-x = g.buscaCaminho(g.vertices[1], g.vertices[2])
-print('Non ', type(x.node))
-print(g.caminhoFinal(x.node))
-g.iniciaVertices()
+# print(g.vertices.keys())
+# print('Quem ',(g.vertices[1]))
+# x = g.buscaCaminho(g.vertices[1], g.vertices[2])
+# print('Non ', type(x.node))
+# print(g.caminhoFinal(x.node))
+# g.iniciaVertices()
 
-x = g.buscaCaminho(g.vertices[2], g.vertices[1])
-print('Non ', type(x.node))
-print(g.caminhoFinal(x.node))
-x = g.buscaCaminho(g.vertices[3], g.vertices[1])
-print('Non ', type(x.node))
-print(g.caminhoFinal(x.node))
-x = g.buscaCaminho(g.vertices[1], g.vertices[3])
-print('Non ', type(x.node))
-print(g.caminhoFinal(x.node))
+# x = g.buscaCaminho(g.vertices[2], g.vertices[1])
+# print('Non ', type(x.node))
+# print(g.caminhoFinal(x.node))
+# x = g.buscaCaminho(g.vertices[3], g.vertices[1])
+# print('Non ', type(x.node))
+# print(g.caminhoFinal(x.node))
+# x = g.buscaCaminho(g.vertices[1], g.vertices[3])
+# print('Non ', type(x.node))
+# print(g.caminhoFinal(x.node))
+# lista = g.buscaCaminhoPorId([1,3])
+# print("\n\n\n\n")
 
+# for i in lista:
 
+#     print(i)
+#     print(type(i))
+print('Iniciou grafo')
 
 s = zerorpc.Server(g)
 s.bind("tcp://0.0.0.0:5005")

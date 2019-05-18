@@ -11,6 +11,7 @@ function replaceAll(str, find, replace) {
 module.exports.post = function (app, req, res) {
 
     console.log('Teste');
+    console.log(req.body)
     // console.log(req.body);
     // console.log(JSON.parse(req.body.obs))
     // var client = new zerorpc.Client();
@@ -45,6 +46,7 @@ module.exports.post = function (app, req, res) {
     // connection.end()
     var lista = [];
     var instrucoes = JSON.parse(req.body.inst)
+    var pedido = JSON.parse(req.body.pedido)
     for(var instrucao of instrucoes){
         if(JSON.stringify(instrucao).includes("node")){
 
@@ -52,7 +54,9 @@ module.exports.post = function (app, req, res) {
                 lugar: instrucao.node.lugar,
                 rfid: instrucao.node.rfid,
                 peso: instrucao.peso,
-                distancia: instrucao.distancia
+                distancia: instrucao.distancia,
+                isFinal: instrucao.isFinal,
+                pedido: pedido.id
             }
             lista.push(enviar)
             console.log('e ',enviar)    

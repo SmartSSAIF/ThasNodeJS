@@ -11,7 +11,7 @@ class DB:
         return cls.banco
 
     def __init__(self):
-        self.db = pymysql.connect(host="localhost", user="root",
+        self.db = pymysql.connect(host="192.168.10.100", user="baldao",
                                   passwd="peteca", db="thas")
 class LugarDAO():
   def __init__(self):
@@ -348,11 +348,14 @@ class Comunicacao(Thread):
     self.enviaInstrucoes(self.carro.toJson(), self.instrucoes, self.pedido.toJson())
 
   def enviaInstrucoes(self, carro, instrucao,pedido):
+    for inst in instrucao:
+      inst['pedido'] = pedido['id']
+    print('=====================')
+    print(Instrucao)
     a = {'carro':(json.dumps(carro)),'inst':(json.dumps(instrucao)), 'obs': (json.dumps(pedido))}
     print('Teste ', carro)
-    print((a),'=========================')
-    print("IP DESSE FILHO DA PUTA ",carro['ip'] )
-    # r = requests.post("http://192.168.10.99:3001/teste", data=(a))
+    # print((a),'=========================')
+    # r = requests.post("http://localhost:3001/teste", data=(json.loads(json.dumps(a))))
     r = requests.post("http://"+carro['ip']+":3000/instrucao", data=json.loads(json.dumps(a)))
     print(r.status_code, r.reason)
     print(r.text[:300] + '...')
