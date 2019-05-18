@@ -33,6 +33,7 @@
     "typescript": "^3.1.6",
     "underscore": "^1.9.1",
     "websocket": "^1.0.28",
-    "ws": "^6.2.1"
+    "ws": "^6.2.1",
+    "zerorpc": "^0.9.8"
   }
 }

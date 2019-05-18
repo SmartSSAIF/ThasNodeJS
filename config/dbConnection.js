@@ -3,9 +3,9 @@ var connMySQL = function(){
 
 	console.log('criou conexao');
 		return mysql.createConnection({
-		host : '54.207.71.24',
-		user : 'awsbanco1',
-		password : 'petequinha',
+		host : 'localhost',
+		user : 'root',
+		password : 'peteca',
 		database : 'thas'
 
 	});

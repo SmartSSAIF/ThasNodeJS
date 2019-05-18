@@ -9,8 +9,17 @@ class SingletonClientes {
     this.clientes = []
     this.logs = [];
     this.requests = []
+    this.posicao = -21.837005
     console.log('instanciou')
 
+  }
+
+  getPosicao(){
+    return this.posicao
+  }
+ 
+  setPosicao(valor){
+    this.posicao = valor
   }
 
   get count() {
@@ -51,25 +60,6 @@ class SingletonClientes {
     console.log('Removeu ', this.clientes.length)
 
   }
-  getUsuario(porta) {
-    console.log('get carros');
-
-    var connection = cn();
-
-    sql = 'select usuario, porta from usuario where porta=' + porta
-    connection.query(sql, function (e, r) {
-      if (e) {
-        console.log(e)
-        return
-      }
-      // for(var i =0;i<r.length;i++){
-      //   console.log(r[i])
-      // }
-      //   var w = ws(5005)
-      return r
-    })
-  }
-
 
 }
 

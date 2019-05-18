@@ -51,8 +51,9 @@ module.exports.getById = function (app, req, res) {
 
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
-    sql = "select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido and pedido.id = "+String(req.query.id)
-    genericDAO.execute(sql, function(error, result){
+    sql = "select distinct pedidoproduto.idPedido, pedido.statusPedido, pedido.prioridade, pedido.observacoes, l1.nome origem, l2.nome destino  	from (lugares, pedido , pedidoproduto    join lugares l1 on pedidoproduto.origem = l1.id join lugares l2 on pedidoproduto.destino = l2.id) where pedidoproduto.idPedido = ? and pedido.id = ?;"
+    //sql = "select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido and pedido.id = "+String(req.query.id)
+    genericDAO.execute(sql, [req.query.id, req.query.id],function(error, result){
         if(error){
             console.log(error)
             // return res.status(400).send({'error': 'Erro ao buscar pedido por id'})

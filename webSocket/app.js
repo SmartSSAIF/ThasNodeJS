@@ -57,20 +57,3 @@ var server = new zerorpc.Server({
 
 server.bind("tcp://0.0.0.0:5858");
 
-// Error: WebSocket is not open: readyState 3 (CLOSED)
-//     at WebSocket.send (/home/gcrtech/monitor/python/mvc/Node/node_modules/ws/lib/websocket.js:329:19)
-//     at sendAll (/home/gcrtech/monitor/python/mvc/Node/app.js:38:36)
-//     at Object.hello (/home/gcrtech/monitor/python/mvc/Node/app.js:46:5)
-//     at Server._recv (/home/gcrtech/monitor/python/mvc/Node/node_modules/zerorpc/lib/server.js:189:29)
-//     at MultiplexingSocket.<anonymous> (/home/gcrtech/monitor/python/mvc/Node/node_modules/zerorpc/lib/server.js:94:46)
-//     at MultiplexingSocket.emit (events.js:193:13)
-//     at MultiplexingSocket.<anonymous> (/home/gcrtech/monitor/python/mvc/Node/node_modules/zerorpc/lib/socket.js:108:18)
-//     at MultiplexingSocket.emit (events.js:193:13)
-//     at exports.Socket.<anonymous> (/home/gcrtech/monitor/python/mvc/Node/node_modules/zerorpc/lib/socket.js:61:14)
-//     at exports.Socket.emit (events.js:193:13)
-/*
-
-
-
-
-*/
