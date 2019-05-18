@@ -23,7 +23,7 @@ module.exports.post = function (app, req, res) {
         },
         body:
         {
-            to: 'eqrIkibNwVM:APA91bHsJf2Cxt417oTzNhcWTpgPcFWs8LtqVWqpp0J6uPeWGNWtH0XO8ipT8zTwawYkNnwx1k4G-fTbL35aUrRWWePhlfXuSn9moRZAAR3RHa51AlfFZ9o8T4UUY0QqvitooKyRdeHK',
+            to: 'ettR9Jmqqlg:APA91bHrdMTWf2x8GlEtqQztuX4eyiibO8z6eElAmmR8LMJMZTPuDGvDQX_LAdd-0XfE9AvKnhepDAsoCQK1Tu2J24Ry1GO5S5nnMQ_gjbX6fwN3Sz-FvhF4zeY5PXfg0zXRuYnIWTqh',
             collapse_key: 'type_a',
             notification:
             {
@@ -45,7 +45,13 @@ module.exports.post = function (app, req, res) {
         json: true
     };
 
-
+    var connection = app.config.dbConnection();
+    var genericDAO = new app.app.models.GenericDAO(connection);
+    genericDAO.update({stausPedido: 3}, {id: req.body.pedido}, "pedido", function(e,r){
+        if(e){
+            console.log(e)
+        }
+    })
     var acabou = req.body.acabou;
     if (acabou == 1) {
         options.body.notification = {
