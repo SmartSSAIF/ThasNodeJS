@@ -47,15 +47,17 @@ module.exports.post = function (app, req, res) {
 
     var connection = app.config.dbConnection();
     var genericDAO = new app.app.models.GenericDAO(connection);
-    genericDAO.update({stausPedido: 3}, {id: req.body.pedido}, "pedido", function(e,r){
+    genericDAO.update({statusPedido: 3}, {id: req.body.pedido}, "pedido", function(e,r){
         if(e){
             console.log(e)
         }
     })
+    console.log("BOdy ", req.body)
     var acabou = req.body.acabou;
-    if (acabou == 1) {
+    console.log("Acabou ", acabou)
+    if (acabou == 0) {
         options.body.notification = {
-            body: 'Um novo pedido realizado',
+            body: 'Um novo pedido foi realizado',
             title: 'THAS',
             sound: 'default'
         }
@@ -68,7 +70,11 @@ module.exports.post = function (app, req, res) {
             status: 'done',
             screen: '/pedido/'+String(req.body.pedido)
         }
-
+        request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+    
+            console.log(body);
+        });
 
     }
     else {
@@ -86,12 +92,14 @@ module.exports.post = function (app, req, res) {
             status: 'done',
             screen: 'home'
         }
-    }
-    request(options, function (error, response, body) {
-        if (error) throw new Error(error);
 
-        console.log(body);
-    });
+        request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+    
+            console.log(body);
+        });
+    
+    }
 
 
     return res.status(200).send(req.body);
