@@ -12,6 +12,8 @@ function replaceAll(str, find, replace) {
 }
 module.exports.post = function (app, req, res) {
 
+    console.log("Body instrucao", req.body);
+
     var options = {
         method: 'POST',
         url: 'https://fcm.googleapis.com/fcm/send',
