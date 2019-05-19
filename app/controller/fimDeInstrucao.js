@@ -1,5 +1,6 @@
 var zerorpc = require("zerorpc");
 var request = require("request");
+var notificacao = require('./../../config/notificacao.json')
 
 module.exports.get = function (app, req, res) {
     res.status(200).send({ deubom: 1 });
@@ -23,7 +24,7 @@ module.exports.post = function (app, req, res) {
         },
         body:
         {
-            to: 'ettR9Jmqqlg:APA91bHrdMTWf2x8GlEtqQztuX4eyiibO8z6eElAmmR8LMJMZTPuDGvDQX_LAdd-0XfE9AvKnhepDAsoCQK1Tu2J24Ry1GO5S5nnMQ_gjbX6fwN3Sz-FvhF4zeY5PXfg0zXRuYnIWTqh',
+            to: notificacao.cristiano,
             collapse_key: 'type_a',
             notification:
             {
