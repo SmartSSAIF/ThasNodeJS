@@ -90,7 +90,7 @@ module.exports.post = function (app, req, res) {
             key_1: 'Value for key_1',
             key_2: 'Value for key_2',
             status: 'done',
-            screen: 'home'
+            screen: '/confirmarPedido/'+String(req.body.pedido)
         }
 
         request(options, function (error, response, body) {
