@@ -11,8 +11,8 @@ class DB:
         return cls.banco
 
     def __init__(self):
-        self.db = pymysql.connect(host="192.168.10.100", user="baldao",
-                                  passwd="peteca", db="thas")
+        self.db = pymysql.connect(host="localhost", user="newuser",
+                                  passwd="p3T#ch&$$", db="thas")
 class LugarDAO():
   def __init__(self):
     self.db = DB().db

@@ -69,6 +69,7 @@ class Grafo(object):
             return []
         print('Chegou ',ids[0],'\t ',ids[1])
         resposta = []
+        print('Tamanho ', len(self.vertices))
         no = self.buscaCaminho(self.vertices[ids[0]], self.vertices[ids[1]])
         caminho = self.caminhoFinal(no)
         print('Tipo ', type(no))
@@ -162,6 +163,7 @@ class Grafo(object):
 
 vertices = {}
 lugares =  LugarDAO().readAll()
+print('Lugares ', lugares)
 for vertice in lugares:
  
     if vertice['id'] <5: ##
@@ -191,8 +193,8 @@ g = Grafo(vertices)
 # x = g.buscaCaminho(g.vertices[1], g.vertices[3])
 # print('Non ', type(x.node))
 # print(g.caminhoFinal(x.node))
-# lista = g.buscaCaminhoPorId([1,3])
-# print("\n\n\n\n")
+lista = g.buscaCaminhoPorId([1,3])
+print("\n\n\n\n")
 
 # for i in lista:
 

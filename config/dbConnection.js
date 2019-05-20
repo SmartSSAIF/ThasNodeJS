@@ -4,8 +4,8 @@ var connMySQL = function(){
 	console.log('criou conexao');
 		return mysql.createConnection({
 		host : 'localhost',
-		user : 'root',
-		password : 'peteca',
+		user : 'newuser',
+		password : 'p3T#ch&$$',
 		database : 'thas'
 
 	});

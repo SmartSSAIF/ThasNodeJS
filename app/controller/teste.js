@@ -44,28 +44,28 @@ module.exports.post = function (app, req, res) {
     // }
     // })
     // connection.end()
-    var lista = [];
-    var instrucoes = JSON.parse(req.body.inst)
-    var pedido = JSON.parse(req.body.pedido)
-    for(var instrucao of instrucoes){
-        if(JSON.stringify(instrucao).includes("node")){
+    // var lista = [];
+    // var instrucoes = JSON.parse(req.body.inst)
+    // var pedido = JSON.parse(req.body.pedido)
+    // for(var instrucao of instrucoes){
+    //     if(JSON.stringify(instrucao).includes("node")){
 
-          var enviar = {
-                lugar: instrucao.node.lugar,
-                rfid: instrucao.node.rfid,
-                peso: instrucao.peso,
-                distancia: instrucao.distancia,
-                isFinal: instrucao.isFinal,
-                pedido: pedido.id
-            }
-            lista.push(enviar)
-            console.log('e ',enviar)    
-            }
-        else {
-          console.log('Vem ',instrucao)
+    //       var enviar = {
+    //             lugar: instrucao.node.lugar,
+    //             rfid: instrucao.node.rfid,
+    //             peso: instrucao.peso,
+    //             distancia: instrucao.distancia,
+    //             isFinal: instrucao.isFinal,
+    //             pedido: pedido.id
+    //         }
+    //         lista.push(enviar)
+    //         console.log('e ',enviar)    
+    //         }
+    //     else {
+    //       console.log('Vem ',instrucao)
   
-        }
-    }
+    //     }
+    // }
     // console.log("Lista ",JSON.stringify(lista))
     return res.status(200).send(req.body);
 }
