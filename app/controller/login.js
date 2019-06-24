@@ -61,6 +61,7 @@ const token = async function (usuario) {
     }
 
     var token = await auth.generateToken(t)
+    console.log("Token conexao ", token);
     return { token }
   }
 

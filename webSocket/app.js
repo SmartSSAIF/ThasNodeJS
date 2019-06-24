@@ -4,7 +4,7 @@ var singleton = require('./app/models/singleton').getInstance()
 var zerorpc = require("zerorpc");
 var flag = 0;
 var WebSocketServer = require('ws').Server,
-    wss = new WebSocketServer({ port: 5010 })
+    wss = new WebSocketServer({ port: 5050 })
 
 
 wss.on('connection', function (ws) {

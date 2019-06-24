@@ -4,10 +4,10 @@ var connMySQL = function(){
 	console.log('criou conexao');
 		return mysql.createConnection({
 		host : 'localhost',
-		user : 'newuser',
-		password : 'p3T#ch&$$',
-		database : 'thas'
-
+		user : 'awsbanco1',
+		password : 'petequinha',
+		database : 'thas',
+		multipleStatements: true
 	});
 };
 

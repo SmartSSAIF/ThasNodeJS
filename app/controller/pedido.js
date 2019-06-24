@@ -14,28 +14,27 @@ module.exports.get = function (app, req, res) {
             return res.status(500).send('Servidor indisponível no momento');
         } else {
             genericDAO.read('lugares', function (err, lugares) {
- 
+
 
                 var dict = []; // create an empty array
-                for (var j = 0; j< lugares.length; j++){
-                dict.push({
-                    key: lugares[j].id,
-                    value: lugares[j].nome
-                });
-            }
+                for (var j = 0; j < lugares.length; j++) {
+                    dict.push({
+                        key: lugares[j].id,
+                        value: lugares[j].nome
+                    });
+                }
                 for (var i = 0; i < result.length; i++) {
-                    console.log("Id ",result[i].idPedido)
+                    console.log("Id ", result[i].idPedido)
                     result[i].origem = dict[result[i].origem].value;
                     result[i].destino = dict[result[i].destino].value
-                    sql = "select distinct pedidoproduto.idProduto,produtos.nome from produtos, pedido, pedidoproduto where pedidoproduto.idProduto = produtos.id and pedidoproduto.idPedido = "+result[i].idPedido; 
+                    sql = "select distinct pedidoproduto.idProduto,produtos.nome from produtos, pedido, pedidoproduto where pedidoproduto.idProduto = produtos.id and pedidoproduto.idPedido = " + result[i].idPedido;
                     console.log(sql)
-                    genericDAO.execute(sql, function(e,r){
-                        if(e)
-                        {
+                    genericDAO.execute(sql, function (e, r) {
+                        if (e) {
                             console.log(e)
-                            return 
+                            return
                         }
-  //Junta os valores
+                        //Junta os valores
                     });
 
                 }
@@ -55,8 +54,8 @@ module.exports.getById = function (app, req, res) {
     var genericDAO = new app.app.models.GenericDAO(connection);
     sql = "select distinct pedidoproduto.idPedido, pedido.statusPedido, pedido.prioridade, pedido.observacoes, l1.nome origem, l2.nome destino  	from (lugares, pedido , pedidoproduto    join lugares l1 on pedidoproduto.origem = l1.id join lugares l2 on pedidoproduto.destino = l2.id) where pedidoproduto.idPedido = ? and pedido.id = ?;"
     //sql = "select distinct pedidoproduto.idPedido,pedido.data, pedido.observacoes, pedidoproduto.origem, pedidoproduto.destino, pedido.statusPedido from pedido, pedidoproduto where  pedido.id = pedidoproduto.idPedido and pedido.id = "+String(req.query.id)
-    genericDAO.execute(sql, [req.query.id, req.query.id],function(error, result){
-        if(error){
+    genericDAO.execute(sql, [req.query.id, req.query.id], function (error, result) {
+        if (error) {
             console.log(error)
             // return res.status(400).send({'error': 'Erro ao buscar pedido por id'})
         }
@@ -90,10 +89,12 @@ module.exports.post = function (app, req, res) {
         prioridade: requisicao.prioridade,
         observacoes: requisicao.observacoes
     }
-    console.log('create \n',data)
+    console.log('create \n', data)
     genericDAO.create(data, "pedido", function (error, resultado) {
         if (!error) {
-            var query = "SELECT * FROM pedido ORDER BY id DESC LIMIT 1";
+            console.log("Resultado do create ", resultado)
+            var idInserido = resultado[1][0]['last_insert_id()'];
+            console.log("Id inserido ", idInserido)
             /*
                     1 - Esperando FILA
                     2 - Buscando
@@ -103,30 +104,16 @@ module.exports.post = function (app, req, res) {
                     5 - Finalizado
                     6 - Cancelado
             */
-            genericDAO.execute(query, null, (err, result) => {
-                console.log("pedidresulto produto")
-                if (err) {
-                    result
-                    console.log(err);
-                    return res.staresulttus(400).send({ criarPedido: 0 });
+
+            var insert = "INSERT INTO pedidoproduto (idProduto, idpedido, origem, destino) values (?,?,?,?);"
+            genericDAO.execute(insert, [3, parseInt(idInserido), parseInt(requisicao.origem), parseInt(requisicao.destino)], (e, result) => {
+
+                if (e) {
+                    console.log(e);
+                    return res.status(400).send({ cadastraPedido: 0 });
                 }
-
-           
-
-                    console.log(result);
-                    console.log('Result [0] ', result[0]);
-                    var insert = "INSERT INTO pedidoproduto (idProduto, idpedido, origem, destino) values (?,?,?,?);"
-                    genericDAO.execute(insert, [0,parseInt(result[0].id), parseInt(requisicao.origem), parseInt(requisicao.destino)], (e, result) => {
-
-                        if (e) {
-                            console.log(e);
-                            return res.status(400).send({ cadastraPedido: 0 });
-                        }
-                        return res.status(200).send({ cadastraPedido: 1 });
-                    });
-                
+                return res.status(200).send({ cadastraPedido: 1 });
             });
-
 
         } else {
             console.log(error);
@@ -155,24 +142,28 @@ module.exports.put = function (app, req, res) {
 
             return res.status(400).send({ err: 1 });
         }
-        var options = { method: 'POST',
-        url: 'http://192.168.10.102:3000/confirmaPedido',
-        headers: 
-         { 'cache-control': 'no-cache',
-           Connection: 'keep-alive',
-           'content-length': '',
-           'accept-encoding': 'gzip, deflate',
-           Host: '192.168.10.102:3000',
-           'Postman-Token': '2c8c4fbd-1114-4570-b6f5-ea2aa90d6cd9,4761f4a3-2850-494f-b644-e12afcfd638f',
-           'Cache-Control': 'no-cache',
-           Accept: '/',
-           'User-Agent': 'PostmanRuntime/7.11.0' } };
-      
-      request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-      
-        console.log(body);
-      });
+        var options = {
+            method: 'POST',
+            url: 'http://192.168.10.102:3000/confirmaPedido',
+            headers:
+            {
+                'cache-control': 'no-cache',
+                Connection: 'keep-alive',
+                'content-length': '',
+                'accept-encoding': 'gzip, deflate',
+                Host: '192.168.10.102:3000',
+                'Postman-Token': '2c8c4fbd-1114-4570-b6f5-ea2aa90d6cd9,4761f4a3-2850-494f-b644-e12afcfd638f',
+                'Cache-Control': 'no-cache',
+                Accept: '/',
+                'User-Agent': 'PostmanRuntime/7.11.0'
+            }
+        };
+
+        request(options, function (error, response, body) {
+            if (error) throw new Error(error);
+
+            console.log(body);
+        });
         return res.status(200).send(body);
 
     })

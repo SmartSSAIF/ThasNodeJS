@@ -11,8 +11,8 @@ class DB:
         return cls.banco
 
     def __init__(self):
-        self.db = pymysql.connect(host="localhost", user="newuser",
-                                  passwd="p3T#ch&$$", db="thas")
+        self.db = pymysql.connect(host="localhost", user="awsbanco1",
+                                  passwd="petequinha", db="thas")
 class LugarDAO():
   def __init__(self):
     self.db = DB().db
@@ -113,6 +113,8 @@ class PedidoProdutoDAO():
     pedidoDB = curToObj(cur)[0]
     cur.execute('select * from pedidoproduto where idPedido = %s',[idPedido])
     produtosDB = curToObj(cur)
+    print("Pedido ", pedidoDB)
+    print("Produto ", produtosDB)
       # id, data, statusPedido, prioridade, origem, destino
     # print("Produtos ", produtosDB)
     pedido = Pedido2(pedidoDB['id'],pedidoDB['data'],pedidoDB['statusPedido'],pedidoDB['prioridade'],produtosDB[0]['origem'],produtosDB[0]['destino'], pedidoDB['observacoes'])
@@ -153,7 +155,8 @@ class CarroDAO():
     carros = []
     for i in carro:
       cur.execute('select rfid from lugares where id=%s',[i['localizacaoAtual']])
-      rfid = curToObj(cur)[0]
+      aux = curToObj(cur)
+      rfid = aux[0]
       carros.append(Carro(i['id'], i['ip'], i['estado'], i['localizacaoAtual'],rfid['rfid']))
     self.db.close()
     return carros

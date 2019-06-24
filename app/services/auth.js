@@ -3,8 +3,7 @@ const authConfig = require('../../config/auth');
 
 
 exports.generateToken = async (data) => {
-    
-    return jwt.sign(data, authConfig.secret, { expiresIn: '1d' });
+    return jwt.sign(data, authConfig.secret, { expiresIn: '7d' });
 }
 
 exports.decodeToken = async (token) => {

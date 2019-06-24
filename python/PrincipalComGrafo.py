@@ -341,7 +341,8 @@ for lugar in hashLugares:
     for adj in hashLugares[lugar].adjacentes:
         if hashLugares[lugar].lugar.nome != adj.lugar.nome:
             print('Adj ',hashLugares[lugar].lugar.nome,'\t',adj.lugar.nome)
-            com.addAresta(hashLugares[lugar].lugar,adj.lugar )
+            print("Tipo ", type(hashLugares[lugar]))
+            com.addAresta(hashLugares[lugar].lugar,adj.lugar)
 
 # com.addAresta(hashLugares[("peteca"+str(16))],hashLugares[("peteca"+str(17))])
 # com.addAresta(hashLugares[("peteca"+str(1))],hashLugares[("peteca"+str(16))])

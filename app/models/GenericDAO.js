@@ -4,7 +4,7 @@ function GenericDAO(connection) {
 }
 
 GenericDAO.prototype.create = async function (field, table, callback) {
-	let x = this._connection.query("insert into " + table + " set ?", [field], callback);
+	let x = this._connection.query("insert into " + table + " set ?; select last_insert_id();", [field], callback);
 }
 GenericDAO.prototype.read = async function (table, callback) {
 	console.log("leia");

@@ -3,7 +3,7 @@ module.exports.get = function (app, req, res) {
   var connection = app.config.dbConnection();
   var genericDAO = new app.app.models.GenericDAO(connection);
 
-  var query = "select * from carros";
+  var query = "select carros.*, e.descricao from carros join estados e on carros.estado=e.id;";
   genericDAO.execute(query, function (error, result) {
     if (error) {
       console.log(error);
@@ -22,10 +22,13 @@ module.exports.post = function (app, req, res) {
     if (error) {
       console.log("erro")
       console.log(error);
-      return res.status(500).send({ lugar: 0 });
-    }
-    else {
-      return res.status(200).send({ lugar: 1 });
+      return res.status(500).send({
+        lugar: 0
+      });
+    } else {
+      return res.status(200).send({
+        lugar: 1
+      });
     }
   });
 
@@ -46,13 +49,19 @@ module.exports.put = function (app, req, res) {
       estado: req.body.estado,
       localizacaoAtual: resultado,
     }
-    genericDAO.update(carro, { id: requisicao.id }, "carros", function (error, result) {
+    genericDAO.update(carro, {
+      id: requisicao.id
+    }, "carros", function (error, result) {
       if (error) {
         console.log("erro")
         console.log(error);
-        return res.status(500).send({ atualizado: 0 });
+        return res.status(500).send({
+          atualizado: 0
+        });
       }
-      res.status(200).send({ atualizado: 1 })
+      res.status(200).send({
+        atualizado: 1
+      })
     });
 
     connection.end();
@@ -66,14 +75,19 @@ module.exports.delete = function (app, req, res) {
 
   var connection = app.config.dbConnection();
   var genericDAO = new app.app.models.GenericDAO(connection);
-  genericDAO.delete({ id: lugar }, "lugares", function (error, result) {
+  genericDAO.delete({
+    id: lugar
+  }, "lugares", function (error, result) {
     if (error) {
       console.log("erro")
       console.log(error);
-      res.status(500).send({ deletado: 0 })
-    }
-    else {
-      res.status(200).send({ deletado: 1 })
+      res.status(500).send({
+        deletado: 0
+      })
+    } else {
+      res.status(200).send({
+        deletado: 1
+      })
     }
 
   });
